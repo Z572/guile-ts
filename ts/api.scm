@@ -13,6 +13,8 @@
             ts-node-field-name-for-child
             ts-node-string
             ts-node-symbol
+            ts-node-start-byte
+            ts-node-end-byte
             ts-node-null?
             ts-node-named?
             ts-node-missing?

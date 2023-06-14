@@ -276,6 +276,13 @@ SCM_DEFINE(tsn_child_by_field_name, "ts-node-child-by-field-name", 2, 1, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE_PUBLIC(tsn_child_by_field_id, "ts-node-child-by-field-id", 2, 0, 0,
+           (SCM o,SCM n), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return make_node(ts_node_child_by_field_id(node->node,scm_to_uint16(n)));
+}
+
 
 void init_ts_api() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));

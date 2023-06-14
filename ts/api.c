@@ -156,6 +156,50 @@ SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "") {
   return make_node(ts_tree_root_node(tst));
 }
 
+SCM_DEFINE(tsn_string, "ts-node-string", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_utf8_string(ts_node_string(node->node));
+}
+
+SCM_DEFINE(tsn_null_p, "ts-node-null?", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_bool(ts_node_is_null(node->node));
+}
+
+SCM_DEFINE(tsn_named_p, "ts-node-named?", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_bool(ts_node_is_named(node->node));
+}
+
+SCM_DEFINE(tsn_missing_p, "ts-node-missing?", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_bool(ts_node_is_missing(node->node));
+}
+
+SCM_DEFINE(tsn_extra_p, "ts-node-extra?", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_bool(ts_node_is_extra(node->node));
+}
+
+SCM_DEFINE(tsn_has_changes_p, "ts-node-has-changes?", 1, 0, 0,
+           (SCM o), "Check if a syntax node has been edited.") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_bool(ts_node_has_changes(node->node));
+}
+
+SCM_DEFINE(tsn_has_error_p, "ts-node-has-error?", 1, 0, 0,
+           (SCM o), "Check if a syntax node has been edited.") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_bool(ts_node_has_error(node->node));
+}
+
 SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
@@ -168,6 +212,18 @@ SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 0, 0, (SCM o), "") {
   return scm_from_uint32(ts_node_child_count(node->node));
 }
 
+SCM_DEFINE(tsn_parent, "ts-node-parent", 1, 0, 0, (SCM o), "")
+#define FUNC_NAME s_tsn_child
+{
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  TSNode tsn=node->node;
+  TSNode root_node=ts_tree_root_node(node->node.tree);
+  return (root_node.id==tsn.id) ? SCM_BOOL_F : make_node(ts_node_parent(tsn))  ;
+}
+#undef FUNC_NAME
+
+
 SCM_DEFINE(tsn_child, "ts-node-child", 2, 0, 0, (SCM o,SCM n), "")
 #define FUNC_NAME s_tsn_child
 {
@@ -177,6 +233,16 @@ SCM_DEFINE(tsn_child, "ts-node-child", 2, 0, 0, (SCM o,SCM n), "")
   return make_node(ts_node_child(node->node,scm_to_uint32(n)));
 }
 #undef FUNC_NAME
+
+SCM_DEFINE(tsn_field_name_for_child, "ts-node-field-name-for-child", 2, 0, 0,
+           (SCM o,SCM n), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  const char *c=ts_node_field_name_for_child(node->node,scm_to_uint32(n));
+  return c ? scm_from_utf8_string(c) : SCM_BOOL_F;
+}
+
+
 
 void init_ts_api() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));

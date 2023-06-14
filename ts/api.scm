@@ -10,6 +10,15 @@
             ts-parser-parse-string
             ts-tree-root-node
             ts-tree-language
+            ts-node-field-name-for-child
+            ts-node-string
+            ts-node-null?
+            ts-node-named?
+            ts-node-missing?
+            ts-node-extra?
+            ts-node-has-changes?
+            ts-node-has-error?
+            ts-node-parent
             ts-node-child
             ts-node-child-count
             ts-node-type))

@@ -124,12 +124,12 @@ SCM_DEFINE(tsp_reset, "ts-parser-reset", 1, 0, 0, (SCM p), "") {
 SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
            (SCM p, SCM tree, SCM string, SCM length), "") {
   ASSERT_TSP(p);
-  if (scm_to_bool(tree)) {
-    (ASSERT_TST(tree));
+  if (scm_is_true(tree)) {
+    ASSERT_TST(tree);
   };
   char* cstring=scm_to_utf8_string(string);
   TSTree *tst =
-      ts_parser_parse_string(FR(p), (scm_to_bool(tree)) ? (FR(tree)) : NULL,
+      ts_parser_parse_string(FR(p), (scm_is_true(tree)) ? (FR(tree)) : NULL,
                              cstring,
                              SCM_UNBNDP(length) ? strlen(cstring)
                                                  : scm_to_uint32(length));

@@ -10,6 +10,8 @@
             ts-parser-parse-string
             ts-tree-root-node
             ts-tree-language
+            ts-node-child
+            ts-node-child-count
             ts-node-type))
 
 (eval-when (expand load eval)

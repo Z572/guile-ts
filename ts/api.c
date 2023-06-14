@@ -162,6 +162,22 @@ SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
   return scm_from_utf8_string(ts_node_type(node->node));
 }
 
+SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_uint32(ts_node_child_count(node->node));
+}
+
+SCM_DEFINE(tsn_child, "ts-node-child", 2, 0, 0, (SCM o,SCM n), "")
+#define FUNC_NAME s_tsn_child
+{
+  ASSERT_TSN(o);
+  SCM_ASSERT(scm_to_bool(scm_less_p(n, tsn_child_count(o))),n,SCM_ARG2,s_tsn_child);
+  Node *node=FR(o);
+  return make_node(ts_node_child(node->node,scm_to_uint32(n)));
+}
+#undef FUNC_NAME
+
 void init_ts_api() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));
   init_ts_parser_type();

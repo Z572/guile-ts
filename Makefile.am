@@ -1,7 +1,5 @@
 AUTOMAKE_OPTIONS = gnu
-SUFFIXES= .c
-
-lib_LTLIBRARIES= libguile_ts.la
+SUFFIXES = .scm .go .c .x
 
 libguile_ts_la_SOURCES=ts/api.c \
 	ts/init.c
@@ -17,9 +15,8 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET) $(GUILE_WARNINGS) -o "$@" "$<"
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(libguile_ts_la_CFLAGS)
-EXTRA_DIST = m4/ChangeLog
+EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm m4/ChangeLog
 SOURCES= ts/api.scm
-SUFFIXES = .scm .go .c .x
 GUILE_WARNINGS =                                          \
   -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
   -Wmacro-use-before-definition                           \
@@ -28,9 +25,22 @@ GUILE_WARNINGS =                                          \
   -Wformat
 
 GOBJECTS = $(SOURCES:%.scm=%.go)
+CLEANFILES = $(GOBJECTS) $(TESTS:tests/%.scm=%.log)
 
 nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES) $(NODIST_SOURCES)
 nobase_go_DATA = $(GOBJECTS)
 
 guile_install_go_files = install-nobase_goDATA
 $(guile_install_go_files): install-nobase_modDATA
+
+
+
+
+TESTS= tests/api.scm
+TEST_EXTENSIONS = .scm
+AM_SCM_LOG_FLAGS = --no-auto-compile
+AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
+SCM_LOG_DRIVER =                                \
+  $(top_builddir)/pre-inst-env                  \
+  $(GUILE) --no-auto-compile -e main            \
+  $(top_srcdir)/build-aux/test-driver.scm

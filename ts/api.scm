@@ -12,6 +12,7 @@
             ts-tree-language
             ts-node-field-name-for-child
             ts-node-string
+            ts-node-symbol
             ts-node-null?
             ts-node-named?
             ts-node-missing?

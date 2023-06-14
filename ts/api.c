@@ -206,6 +206,12 @@ SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
   return scm_from_utf8_string(ts_node_type(node->node));
 }
 
+SCM_DEFINE(tsn_symbol, "ts-node-symbol", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_uint16(ts_node_symbol(node->node));
+}
+
 SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);

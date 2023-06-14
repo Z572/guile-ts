@@ -283,6 +283,31 @@ SCM_DEFINE_PUBLIC(tsn_child_by_field_id, "ts-node-child-by-field-id", 2, 0, 0,
   return make_node(ts_node_child_by_field_id(node->node,scm_to_uint16(n)));
 }
 
+SCM_DEFINE_PUBLIC(tsn_next_sibling, "ts-node-next-sibling", 1, 0, 0,
+           (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return make_node(ts_node_next_sibling(node->node));
+}
+SCM_DEFINE_PUBLIC(tsn_prev_sibling, "ts-node-prev-sibling", 1, 0, 0,
+           (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return make_node(ts_node_prev_sibling(node->node));
+}
+SCM_DEFINE_PUBLIC(tsn_next_named_sibling, "ts-node-next-named-sibling", 1, 0, 0,
+           (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return make_node(ts_node_next_named_sibling(node->node));
+}
+SCM_DEFINE_PUBLIC(tsn_prev_named_sibling, "ts-node-prev-named-sibling", 1, 0, 0,
+           (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return make_node(ts_node_prev_named_sibling(node->node));
+}
+
 
 void init_ts_api() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));

@@ -9,6 +9,7 @@
             get-ts-language-from-file
             ts-parser-parse-string
             ts-tree-root-node
+            ts-tree-language
             ts-node-type))
 
 (eval-when (expand load eval)

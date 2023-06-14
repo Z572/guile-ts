@@ -16,6 +16,18 @@ static SCM tsn_type;
 #define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o)
 #define FR(o) scm_foreign_object_ref(o, 0)
 
+SCM type_table ;
+static inline SCM make_foreign_object(SCM type, void *o) {
+  SCM p=scm_from_pointer(o, NULL);
+  SCM d=scm_hash_ref(type_table, p, SCM_BOOL_F);
+  if (scm_is_false(d)) {
+    SCM obj=scm_make_foreign_object_1(type, o);
+    scm_hash_set_x(type_table, p, obj);
+  return obj;
+}
+  return d;
+}
+
 static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
 
 static void ts_tree_finalizer(SCM scm) { ts_tree_delete(FR(scm)); }
@@ -52,18 +64,14 @@ typedef struct {
   TSNode node;
 } Node;
 
-SCM make_node(TSNode tsn) {
+static SCM make_node(TSNode tsn) {
   Node *node=scm_malloc(sizeof(Node));
   node->node=tsn;
-  return scm_make_foreign_object_1(tsn_type,node);
+  return make_foreign_object(tsn_type,node);
 }
 
-void node_finalizer(SCM o)
-{
-  Node *node=FR(o);
-  free(node);
-}
-void init_ts_node_type(void) {
+static void node_finalizer(SCM o) { free(FR(o));}
+static void init_ts_node_type(void) {
   SCM name, slots;
   scm_t_struct_finalize finalizer;
   name = scm_from_utf8_symbol("<ts-node>");
@@ -91,7 +99,7 @@ SCM_DEFINE(tsp_language, "%tsp-language", 1, 0, 0, (SCM o), "") {
   ASSERT_TSP(o);
   TSParser *tsp = FR(o);
   const TSLanguage *tsl = ts_parser_language(tsp);
-  return tsl ? scm_make_foreign_object_1(tsl_type, tsl) : SCM_BOOL_F;
+  return tsl ? make_foreign_object(tsl_type, tsl) : SCM_BOOL_F;
 }
 
 SCM_DEFINE(tsp_set_timeout, "%tsp-set-timeout!", 2, 0, 0, (SCM p, SCM timeout),
@@ -125,7 +133,7 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
                              cstring,
                              SCM_UNBNDP(length) ? strlen(cstring)
                                                  : scm_to_uint32(length));
-  return scm_make_foreign_object_1(tst_type, tst);
+  return make_foreign_object(tst_type, tst);
 }
 
 /// Tree
@@ -133,9 +141,14 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
 SCM_DEFINE(tst_copy, "ts-tree-copy", 1, 0, 0, (SCM o), "") {
   ASSERT_TST(o);
   TSTree *tst = FR(o);
-  return scm_make_foreign_object_1(tst_type, ts_tree_copy(tst));
+  return make_foreign_object(tst_type, ts_tree_copy(tst));
 }
 
+SCM_DEFINE(tst_language, "ts-tree-language", 1, 0, 0, (SCM o), "") {
+  ASSERT_TST(o);
+  TSTree *tst = FR(o);
+  return make_foreign_object(tsl_type, ts_tree_language(tst)) ;
+}
 
 SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "") {
   ASSERT_TST(o);
@@ -150,6 +163,7 @@ SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
 }
 
 void init_ts_api() {
+  type_table=scm_make_weak_value_hash_table(scm_from_int(3000));
   init_ts_parser_type();
   init_ts_language_type();
   init_ts_tree_type();

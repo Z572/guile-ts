@@ -21,6 +21,9 @@
             ts-node-parent
             ts-node-child
             ts-node-child-count
+            ts-node-child-by-field-name
+            ts-node-named-child-count
+            ts-node-named-child
             ts-node-type))
 
 (eval-when (expand load eval)

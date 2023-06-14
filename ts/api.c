@@ -228,7 +228,23 @@ SCM_DEFINE(tsn_child, "ts-node-child", 2, 0, 0, (SCM o,SCM n), "")
 #define FUNC_NAME s_tsn_child
 {
   ASSERT_TSN(o);
-  SCM_ASSERT(scm_to_bool(scm_less_p(n, tsn_child_count(o))),n,SCM_ARG2,s_tsn_child);
+  SCM_ASSERT(scm_to_bool(scm_less_p(n, tsn_child_count(o))),n,SCM_ARG2,FUNC_NAME);
+  Node *node=FR(o);
+  return make_node(ts_node_child(node->node,scm_to_uint32(n)));
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(tsn_named_child_count, "ts-node-named-child-count", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_uint32(ts_node_named_child_count(node->node));
+}
+
+SCM_DEFINE(tsn_named_child, "ts-node-named-child", 2, 0, 0, (SCM o,SCM n), "")
+#define FUNC_NAME s_tsn_named_child
+{
+  ASSERT_TSN(o);
+  SCM_ASSERT(scm_to_bool(scm_less_p(n, tsn_named_child_count(o))),n,SCM_ARG2,FUNC_NAME);
   Node *node=FR(o);
   return make_node(ts_node_child(node->node,scm_to_uint32(n)));
 }
@@ -242,6 +258,23 @@ SCM_DEFINE(tsn_field_name_for_child, "ts-node-field-name-for-child", 2, 0, 0,
   return c ? scm_from_utf8_string(c) : SCM_BOOL_F;
 }
 
+SCM_DEFINE(tsn_child_by_field_name, "ts-node-child-by-field-name", 2, 1, 0,
+           (SCM o ,SCM name,SCM length), "")
+#define FUNC_NAME s_tsn_child_by_field_name
+{
+  ASSERT_TSN(o);
+  if (!SCM_UNBNDP(length)) {
+    SCM_ASSERT((scm_c_string_length(name) < scm_to_uint32(length)), length, SCM_ARG3, FUNC_NAME);
+  }
+  Node *node=FR(o);
+  return make_node(ts_node_child_by_field_name
+                   (node->node,
+                    scm_to_utf8_string(name),
+                    SCM_UNBNDP(length)
+                    ? scm_c_string_length(name)
+                    : scm_to_uint32(length)));
+}
+#undef FUNC_NAME
 
 
 void init_ts_api() {

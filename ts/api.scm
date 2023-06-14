@@ -7,7 +7,9 @@
             ts-parser-language
             ts-parser-timeout
             get-ts-language-from-file
-            ts-parser-parse-string))
+            ts-parser-parse-string
+            ts-tree-root-node
+            ts-node-type))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts")

@@ -11,6 +11,7 @@ static SCM tsn_type;
 #define ASSERT_TSP(o) scm_assert_foreign_object_type(tsp_type, o)
 #define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
 #define ASSERT_TST(o) scm_assert_foreign_object_type(tst_type, o)
+#define ASSERT_TSN(o) scm_assert_foreign_object_type(tsn_type, o)
 #define ASSERT_TSQ(o) scm_assert_foreign_object_type(tsq_type, o)
 #define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o)
 #define FR(o) scm_foreign_object_ref(o, 0)
@@ -46,12 +47,28 @@ void init_ts_tree_type(void) {
   tst_type = scm_make_foreign_object_type(name, slots, finalizer);
 }
 
+
+typedef struct {
+  TSNode node;
+} Node;
+
+SCM make_node(TSNode tsn) {
+  Node *node=scm_malloc(sizeof(Node));
+  node->node=tsn;
+  return scm_make_foreign_object_1(tsn_type,node);
+}
+
+void node_finalizer(SCM o)
+{
+  Node *node=FR(o);
+  free(node);
+}
 void init_ts_node_type(void) {
   SCM name, slots;
   scm_t_struct_finalize finalizer;
-  name = scm_from_utf8_symbol("<%ts-node>");
+  name = scm_from_utf8_symbol("<ts-node>");
   slots = scm_list_1(scm_from_utf8_symbol("%data"));
-  finalizer = ts_tree_finalizer;
+  finalizer = node_finalizer;
   tsn_type = scm_make_foreign_object_type(name, slots, finalizer);
 }
 
@@ -119,16 +136,24 @@ SCM_DEFINE(tst_copy, "ts-tree-copy", 1, 0, 0, (SCM o), "") {
   return scm_make_foreign_object_1(tst_type, ts_tree_copy(tst));
 }
 
-/* SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "") { */
-/*   ASSERT_TST(o); */
-/*   TSTree *tst = FR(o); */
-/*   return ts_tree_root_node(tst); */
-/* } */
+
+SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "") {
+  ASSERT_TST(o);
+  TSTree *tst = FR(o);
+  return make_node(ts_tree_root_node(tst));
+}
+
+SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return scm_from_utf8_string(ts_node_type(node->node));
+}
 
 void init_ts_api() {
   init_ts_parser_type();
   init_ts_language_type();
   init_ts_tree_type();
+  init_ts_node_type();
   scm_c_define("<ts-language>", tsl_type);
   scm_c_define("<%ts-parser>", tsp_type);
 #include "api.x"

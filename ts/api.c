@@ -308,6 +308,14 @@ SCM_DEFINE_PUBLIC(tsn_prev_named_sibling, "ts-node-prev-named-sibling", 1, 0, 0,
   return make_node(ts_node_prev_named_sibling(node->node));
 }
 
+SCM_DEFINE_PUBLIC(tsn_eq, "ts-node-eq?", 2, 0, 0,
+           (SCM o,SCM o2), "") {
+  ASSERT_TSN(o);
+  ASSERT_TSN(o2);
+  Node *node=FR(o);
+  Node *node2=FR(o2);
+  return scm_from_bool(ts_node_eq(node->node, node2->node));
+}
 
 void init_ts_api() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));

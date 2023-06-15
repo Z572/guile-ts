@@ -36,7 +36,7 @@ $(guile_install_go_files): install-nobase_modDATA
 TESTS= tests/api.scm
 TEST_EXTENSIONS = .scm
 AM_SCM_LOG_FLAGS = --no-auto-compile
-AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
+AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)" abs_top_builddir="$(abs_top_builddir)"
 SCM_LOG_DRIVER =                                \
   $(top_builddir)/pre-inst-env                  \
   $(GUILE) --no-auto-compile -e main            \

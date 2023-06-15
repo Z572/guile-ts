@@ -366,12 +366,20 @@ SCM_DEFINE(tsl_version, "ts-language-version", 1, 0, 0,
   return scm_from_uint32(ts_language_version(FR(o)));
 }
 
+void init_ts_api_enum() {
+#define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n)
+  DEFINE_ENUM(TSSymbolTypeRegular);
+  DEFINE_ENUM(TSSymbolTypeAnonymous);
+  DEFINE_ENUM(TSSymbolTypeAuxiliary);
+#undef DEFINE_ENUM
+}
 void init_ts_api() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));
   init_ts_parser_type();
   init_ts_language_type();
   init_ts_tree_type();
   init_ts_node_type();
+  init_ts_api_enum();
   scm_c_define("<ts-language>", tsl_type);
   scm_c_define("<%ts-parser>", tsp_type);
 #include "api.x"

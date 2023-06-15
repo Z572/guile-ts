@@ -33,9 +33,6 @@ nobase_go_DATA = $(GOBJECTS)
 guile_install_go_files = install-nobase_goDATA
 $(guile_install_go_files): install-nobase_modDATA
 
-
-
-
 TESTS= tests/api.scm
 TEST_EXTENSIONS = .scm
 AM_SCM_LOG_FLAGS = --no-auto-compile
@@ -44,3 +41,14 @@ SCM_LOG_DRIVER =                                \
   $(top_builddir)/pre-inst-env                  \
   $(GUILE) --no-auto-compile -e main            \
   $(top_srcdir)/build-aux/test-driver.scm
+
+# a tree-sitter-json for test
+# https://github.com/tree-sitter/tree-sitter-json
+# commit 40a81c01a40ac48744e0c8ccabbaba1920441199
+
+EXTRA_DIST += tests/tree-sitter-json.c
+CLEANFILES += tests/tree-sitter-json.so
+$(TESTS): tests/tree-sitter-json.so
+tests/tree-sitter-json.so: tests/tree-sitter-json.c
+	-$(MKDIR_P) $(top_builddir)/tests
+	$(CC) $(TREE_SITTER_CFLAGS) -fPIC -shared $< -o $@

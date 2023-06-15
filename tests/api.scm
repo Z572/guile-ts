@@ -26,4 +26,16 @@
          (ts-parser-timeout o)))
   (test-error "error when get noexits lib"
               #t
-              (get-ts-language-from-file "noexits-lib" "noexits-func")))
+              (get-ts-language-from-file "noexits-lib" "noexits-func"))
+  (define json-language #f)
+  (test-assert "load language from so"
+    (let ((o (get-ts-language-from-file
+              (string-append (getenv "abs_top_builddir")
+                             "/tests/tree-sitter-json.so")
+              "tree_sitter_json")))
+      (set! json-language o)
+      o))
+  (test-equal "set language"
+    json-language
+    (ts-parser-language
+     (make <ts-parser> #:language json-language))))

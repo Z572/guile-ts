@@ -96,8 +96,7 @@
 
 (define (get-ts-language-from-file lib name)
   (let ((o (foreign-library-function lib name #:return-type '*)))
-    (if o (make <ts-language> #:%data (pointer-address (o)))
-        #f)))
+    (and o (%rf <ts-language> (o)))))
 
 (define-method (ts-node-childs (node <ts-node>))
   (map (cut ts-node-child node <>)

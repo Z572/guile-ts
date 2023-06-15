@@ -30,6 +30,11 @@ static inline SCM make_foreign_object(SCM type, void *o) {
   return d;
 }
 
+SCM_DEFINE(ref_or_set, "%rf", 2, 0, 0, (SCM type,SCM point),
+           "") {
+  return make_foreign_object(type,scm_to_pointer(point));
+}
+
 static inline SCM make_range(TSRange *range) {
   return make_foreign_object(scm_c_private_ref("ts api", "<ts-range>"), range);
 }

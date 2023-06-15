@@ -236,7 +236,7 @@ SCM_DEFINE(tsn_parent, "ts-node-parent", 1, 0, 0, (SCM o), "")
   Node *node=FR(o);
   TSNode tsn=node->node;
   TSNode root_node=ts_tree_root_node(node->node.tree);
-  return (root_node.id==tsn.id) ? SCM_BOOL_F : make_node(ts_node_parent(tsn))  ;
+  return ts_node_eq(tsn,root_node) ? SCM_BOOL_F : make_node(ts_node_parent(tsn));
 }
 #undef FUNC_NAME
 

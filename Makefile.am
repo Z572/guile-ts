@@ -15,7 +15,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET) $(GUILE_WARNINGS) -o "$@" "$<"
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(libguile_ts_la_CFLAGS)
-EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm m4/ChangeLog
+EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm
 SOURCES= ts/api.scm ts.scm
 GUILE_WARNINGS =                                          \
   -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \

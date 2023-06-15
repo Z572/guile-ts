@@ -6,6 +6,7 @@ AC_INIT([guile-ts], [0.1.0], [873216071@qq.com])
 AC_CONFIG_SRCDIR([ts/api.c])
 AC_CONFIG_HEADERS([ts/config.h])
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([color-tests subdir-objects gnu])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
@@ -22,7 +23,6 @@ LT_INIT([dlopen disable-static])
 GUILE_PKG([3.0])
 
 GUILE_PROGS
-GUILE_FLAGS
 GUILE_SITE_DIR
 
 # Checks for typedefs, structures, and compiler characteristics.

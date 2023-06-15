@@ -28,8 +28,18 @@ static inline SCM make_foreign_object(SCM type, void *o) {
   return d;
 }
 
-static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
+static inline TSPoint cons_to_point(SCM cons) {
+  TSPoint point = {
+    .row= scm_to_uint32(scm_car(cons)),
+    .column= scm_to_uint32(scm_cdr(cons))
+  };
+  return point;
+}
 
+static inline SCM point_to_cons(TSPoint p) {
+  return scm_cons(scm_from_uint32(p.row),scm_from_uint32(p.column));
+}
+static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
 static void ts_tree_finalizer(SCM scm) { ts_tree_delete(FR(scm)); }
 
 void init_ts_parser_type(void) {
@@ -211,10 +221,18 @@ SCM_DEFINE(tsn_symbol, "ts-node-symbol", 1, 0, 0, (SCM o), "") {
   Node *node=FR(o);
   return scm_from_uint16(ts_node_symbol(node->node));
 }
+
 SCM_DEFINE(tsn_start_byte, "ts-node-start-byte", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
   return scm_from_uint32(ts_node_start_byte(node->node));
+}
+
+SCM_DEFINE(tsn_start_point, "ts-node-start-point", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  TSPoint point=ts_node_start_point(node->node);
+  return point_to_cons(point);
 }
 
 SCM_DEFINE(tsn_end_byte, "ts-node-end-byte", 1, 0, 0, (SCM o), "") {

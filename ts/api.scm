@@ -14,6 +14,7 @@
             ts-node-string
             ts-node-symbol
             ts-node-start-byte
+            ts-node-start-point
             ts-node-end-byte
             ts-node-null?
             ts-node-named?

@@ -11,6 +11,8 @@
                               #:language 20))
   (test-error "<ts-parser> init timeout error value" (make <ts-parser>
                               #:timeout 'a))
+  (test-equal "ts-parser-parse-string without langeuage"
+    #f (ts-parser-parse-string (make <ts-parser>) #f "[]"))
   (test-equal "ts-parser-timeout is 0"
     0 (ts-parser-timeout (make <ts-parser>)))
   (test-equal "ts-parser-time is 20"

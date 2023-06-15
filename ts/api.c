@@ -248,7 +248,7 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
                              cstring,
                              SCM_UNBNDP(length) ? strlen(cstring)
                                                  : scm_to_uint32(length));
-  return make_foreign_object(tst_type, tst);
+  return tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
 }
 
 /// Tree

@@ -27,7 +27,10 @@
             ts-node-child-by-field-name
             ts-node-named-child-count
             ts-node-named-child
-            ts-node-type))
+            ts-node-type
+            ts-language-field-count
+            ts-language-field-name-for-id
+            ts-language-version))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts")

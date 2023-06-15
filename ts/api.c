@@ -241,6 +241,12 @@ SCM_DEFINE(tsn_end_byte, "ts-node-end-byte", 1, 0, 0, (SCM o), "") {
   return scm_from_uint32(ts_node_end_byte(node->node));
 }
 
+SCM_DEFINE(tsn_end_point, "ts-node-end-point", 1, 0, 0, (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return point_to_cons(ts_node_end_point(node->node));
+}
+
 SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);

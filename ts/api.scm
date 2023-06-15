@@ -16,6 +16,7 @@
             ts-node-start-byte
             ts-node-start-point
             ts-node-end-byte
+            ts-node-end-point
             ts-node-null?
             ts-node-named?
             ts-node-missing?

@@ -8,12 +8,14 @@ static SCM tst_type;
 static SCM tsq_type;
 static SCM tsqc_type;
 static SCM tsn_type;
+static SCM tsr_type;
 #define ASSERT_TSP(o) scm_assert_foreign_object_type(tsp_type, o)
 #define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
 #define ASSERT_TST(o) scm_assert_foreign_object_type(tst_type, o)
 #define ASSERT_TSN(o) scm_assert_foreign_object_type(tsn_type, o)
 #define ASSERT_TSQ(o) scm_assert_foreign_object_type(tsq_type, o)
 #define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o)
+#define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o)
 #define FR(o) scm_foreign_object_ref(o, 0)
 
 SCM type_table ;
@@ -26,6 +28,10 @@ static inline SCM make_foreign_object(SCM type, void *o) {
   return obj;
 }
   return d;
+}
+
+static inline SCM make_range(TSRange *range) {
+  return make_foreign_object(scm_c_private_ref("ts api", "<ts-range>"), range);
 }
 
 static inline TSPoint cons_to_point(SCM cons) {
@@ -58,6 +64,73 @@ void init_ts_language_type(void) {
   slots = scm_list_1(scm_from_utf8_symbol("%data"));
   finalizer = NULL;
   tsl_type = scm_make_foreign_object_type(name, slots, finalizer);
+}
+
+void init_ts_range_type(void) {
+  SCM name, slots;
+  scm_t_struct_finalize finalizer;
+  name = scm_from_utf8_symbol("<%ts-range>");
+  slots = scm_list_1(scm_from_utf8_symbol("%data"));
+  finalizer = NULL;
+  tsr_type = scm_make_foreign_object_type(name, slots, finalizer);
+  scm_c_define("<%ts-range>", tsr_type);
+}
+
+SCM_DEFINE(tsr_start_point, "%tsr-start-point", 1, 0, 0, (SCM o),
+           "") {
+  ASSERT_TSR(o);
+  TSRange *range=FR(o);
+  return point_to_cons(range->start_point);
+}
+SCM_DEFINE(tsr_end_point, "%tsr-end-point", 1, 0, 0, (SCM o),
+           "") {
+  ASSERT_TSR(o);
+  TSRange *range=FR(o);
+  return point_to_cons(range->end_point);
+}
+
+SCM_DEFINE(tsr_make, "%make-tsr", 0, 0, 0, (),
+           "") {
+  return scm_from_pointer(scm_calloc(sizeof(TSRange *)),NULL);
+}
+
+SCM_DEFINE(tsr_start_byte, "%tsr-start-byte", 1, 0, 0, (SCM o),
+           "") {
+  TSRange *range=FR(o);
+  return scm_from_uint32(range->start_byte);
+}
+SCM_DEFINE(tsr_end_byte, "%tsr-end-byte", 1, 0, 0, (SCM o),
+           "") {
+  TSRange *range=FR(o);
+  return scm_from_uint32(range->end_byte);
+}
+
+SCM_DEFINE(tsr_set_end_point, "%tsr-set-end-point!", 2, 0, 0, (SCM r,SCM o),
+           "") {
+  ASSERT_TSR(r);
+  TSRange *range=FR(r);
+  range->end_point=cons_to_point(o);
+  return SCM_UNSPECIFIED;
+}
+SCM_DEFINE(tsr_set_start_point, "%tsr-set-start-point!", 2, 0, 0, (SCM r,SCM o),
+           "") {
+  ASSERT_TSR(r);
+  TSRange *range=FR(r);
+  range->start_point=cons_to_point(o);
+  return SCM_UNSPECIFIED;
+}
+SCM_DEFINE(tsr_set_start_byte, "%tsr-set-start-byte!", 2, 0, 0, (SCM r,SCM o),
+           "") {
+  TSRange *range=FR(r);
+  range->start_byte=scm_to_uint32(o);
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE(tsr_set_end_byte, "%tsr-set-end-byte!", 2, 0, 0, (SCM r,SCM o),
+           "") {
+  TSRange *range=FR(r);
+  range->end_byte=scm_to_uint32(o);
+  return SCM_UNSPECIFIED;
 }
 
 void init_ts_tree_type(void) {
@@ -431,6 +504,7 @@ void init_ts_api() {
   init_ts_tree_type();
   init_ts_node_type();
   init_ts_api_enum();
+  init_ts_range_type();
   scm_c_define("<ts-language>", tsl_type);
   scm_c_define("<%ts-parser>", tsp_type);
   scm_c_define("<ts-node>",tsn_type);

@@ -5,6 +5,7 @@
   #:use-module (system foreign-library)
   #:use-module (oop goops)
   #:export (<ts-parser>
+            <ts-range>
             ts-parser-language
             ts-parser-timeout
             get-ts-language-from-file
@@ -54,6 +55,35 @@
            #:slot-set! %tsp-set-timeout!
            #:accessor ts-parser-timeout
            #:init-keyword #:timeout))
+
+(define-class <ts-range> (<%ts-range>)
+  (start-point #:allocation #:virtual
+               #:slot-ref %tsr-start-point
+               #:slot-set! %tsr-set-start-point!
+               #:accessor ts-range-start-point
+               #:init-keyword #:start-point)
+  (end-point #:allocation #:virtual
+             #:slot-ref %tsr-end-point
+             #:slot-set! %tsr-set-end-point!
+             #:accessor ts-range-end-point
+             #:init-keyword #:end-point)
+  (start-byte #:allocation #:virtual
+              #:slot-ref %tsr-start-byte
+              #:slot-set! %tsr-set-start-byte!
+              #:accessor ts-range-start-byte
+              #:init-keyword #:start-byte)
+  (end-byte #:allocation #:virtual
+            #:slot-ref %tsr-end-byte
+            #:slot-set! %tsr-set-end-byte!
+            #:accessor ts-range-end-byte
+            #:init-keyword #:end-byte))
+
+(define-method (initialize (obj <ts-range>) initargs)
+  (let ((data (get-keyword #:%data initargs #f)))
+    (if data
+        (next-method obj (cons* #:%data data initargs))
+        (next-method obj (cons* #:%data (pointer-address (%make-tsr))
+                                initargs)))))
 
 (define-method (initialize (obj <ts-parser>) initarg)
   (next-method obj (cons* #:%data (pointer-address (%tsp-new)) initarg)))

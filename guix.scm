@@ -28,7 +28,7 @@
 (define-public guile-ts
   (package
     (name "guile-ts")
-    (version "0.1")
+    (version "0.1.0")
     (source (local-file "." "guile-ts"
                         #:recursive? #t
                         #:select? (git-predicate %srcdir)))

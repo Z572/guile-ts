@@ -7,10 +7,12 @@
   (test-assert "make <ts-parser>" (make <ts-parser>))
   (test-assert "ts-parser-language is #f"
     (not (ts-parser-language (make <ts-parser>))))
-  (test-error "<ts-parser> init language error value" (make <ts-parser>
-                              #:language 20))
-  (test-error "<ts-parser> init timeout error value" (make <ts-parser>
-                              #:timeout 'a))
+  (test-error "<ts-parser> init language error value" #t
+              (make <ts-parser>
+                #:language 20))
+  (test-error "<ts-parser> init timeout error value" #t
+              (make <ts-parser>
+                #:timeout 'a))
   (test-equal "ts-parser-parse-string without langeuage"
     #f (ts-parser-parse-string (make <ts-parser>) #f "[]"))
   (test-equal "ts-parser-timeout is 0"
@@ -21,4 +23,7 @@
   (test-equal "set! ts-parser-time to 20"
     20 (let ((o (make <ts-parser>)))
          (set! (ts-parser-timeout o) 20)
-         (ts-parser-timeout o))))
+         (ts-parser-timeout o)))
+  (test-error "error when get noexits lib"
+              #t
+              (get-ts-language-from-file "noexits-lib" "noexits-func")))

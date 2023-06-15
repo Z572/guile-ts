@@ -145,6 +145,7 @@ void init_ts_tree_type(void) {
   slots = scm_list_1(scm_from_utf8_symbol("%data"));
   finalizer = ts_tree_finalizer;
   tst_type = scm_make_foreign_object_type(name, slots, finalizer);
+  scm_c_define("<ts-tree>",tst_type);
 }
 
 

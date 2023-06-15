@@ -6,6 +6,7 @@
   #:use-module (oop goops)
   #:export (<ts-parser>
             <ts-range>
+            ts-tree?
             ts-parser-language
             ts-parser-included-ranges
             ts-parser-timeout
@@ -83,6 +84,9 @@
             #:slot-set! %tsr-set-end-byte!
             #:accessor ts-range-end-byte
             #:init-keyword #:end-byte))
+
+(define (ts-tree? t)
+  (is-a? t <ts-tree>))
 
 (define-method (initialize (obj <ts-range>) initargs)
   (let ((data (get-keyword #:%data initargs #f)))

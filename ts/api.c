@@ -433,5 +433,6 @@ void init_ts_api() {
   init_ts_api_enum();
   scm_c_define("<ts-language>", tsl_type);
   scm_c_define("<%ts-parser>", tsp_type);
+  scm_c_define("<ts-node>",tsn_type);
 #include "api.x"
 }

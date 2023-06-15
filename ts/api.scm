@@ -1,4 +1,5 @@
 (define-module (ts api)
+  #:use-module (srfi srfi-26)
   #:use-module (system foreign)
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
@@ -34,7 +35,9 @@
             ts-node-first-named-child-for-byte
             ts-language-field-count
             ts-language-field-name-for-id
-            ts-language-version))
+            ts-language-version
+            ts-node-childs
+            ts-node-named-childs))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts")
@@ -59,3 +62,11 @@
   (let ((o (foreign-library-function lib name #:return-type '*)))
     (if o (make <ts-language> #:%data (pointer-address (o)))
         #f)))
+
+(define-method (ts-node-childs (node <ts-node>))
+  (map (cut ts-node-child node <>)
+       (iota (ts-node-child-count node))))
+
+(define-method (ts-node-named-childs (node <ts-node>))
+  (map (cut ts-node-named-child node <>)
+       (iota (ts-node-named-child-count node))))

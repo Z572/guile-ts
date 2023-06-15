@@ -325,6 +325,33 @@ SCM_DEFINE_PUBLIC(tsn_prev_named_sibling, "ts-node-prev-named-sibling", 1, 0, 0,
   return make_node(ts_node_prev_named_sibling(node->node));
 }
 
+SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 0, 0,
+           (SCM o,SCM n), "")
+#define FUNC_NAME s_tsn_first_child_for_byte
+{
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  TSNode t_node=node->node;
+  uint32_t c_n =scm_to_uint32(n);
+  SCM_ASSERT((c_n <= (ts_node_end_byte(t_node))),n, SCM_ARG2, FUNC_NAME);
+  return make_node(ts_node_first_child_for_byte(t_node,c_n));
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(tsn_first_named_child_for_byte, "ts-node-first-named-child-for-byte"
+           , 2, 0, 0, (SCM o,SCM n), "")
+#define FUNC_NAME s_tsn_first_named_child_for_byte
+{
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  TSNode t_node=node->node;
+  uint32_t c_n =scm_to_uint32(n);
+  SCM_ASSERT((c_n <= (ts_node_end_byte(t_node))),n, SCM_ARG2, FUNC_NAME);
+  return make_node(ts_node_first_named_child_for_byte(node->node,c_n));
+}
+#undef FUNC_NAME
+
+
 SCM_DEFINE_PUBLIC(tsn_eq, "ts-node-eq?", 2, 0, 0,
            (SCM o,SCM o2), "") {
   ASSERT_TSN(o);

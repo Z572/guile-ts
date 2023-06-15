@@ -28,6 +28,8 @@
             ts-node-named-child-count
             ts-node-named-child
             ts-node-type
+            ts-node-first-child-for-byte
+            ts-node-first-named-child-for-byte
             ts-language-field-count
             ts-language-field-name-for-id
             ts-language-version))

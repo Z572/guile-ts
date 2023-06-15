@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main" , "remove-m4"]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 

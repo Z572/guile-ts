@@ -7,6 +7,7 @@
   #:export (<ts-parser>
             <ts-range>
             ts-parser-language
+            ts-parser-included-ranges
             ts-parser-timeout
             get-ts-language-from-file
             ts-parser-parse-string
@@ -54,7 +55,12 @@
            #:slot-ref %tsp-timeout
            #:slot-set! %tsp-set-timeout!
            #:accessor ts-parser-timeout
-           #:init-keyword #:timeout))
+           #:init-keyword #:timeout)
+  (included-ranges #:allocation #:virtual
+                   #:slot-ref %tsp-included-ranges
+                   #:slot-set! %tsp-set-included-ranges!
+                   #:accessor ts-parser-included-ranges
+                   #:init-keyword #:include-ranges))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual

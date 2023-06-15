@@ -185,6 +185,38 @@ SCM_DEFINE(tsp_language, "%tsp-language", 1, 0, 0, (SCM o), "") {
   return tsl ? make_foreign_object(tsl_type, tsl) : SCM_BOOL_F;
 }
 
+SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
+           "") {
+  ASSERT_TSP(o);
+  TSParser *tsp = FR(o);
+  uint32_t *length=scm_gc_malloc_pointerless(sizeof(uint32_t *), "p");
+  TSRange *range=ts_parser_included_ranges(tsp, length);
+  SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
+  for (unsigned i = 0; i < *length; i++) {
+    TSRange *r=&range[i];
+    list=scm_cons(make_range(r),list);
+  }
+  return list;
+}
+
+SCM_DEFINE(tsp_set_included_ranges, "%tsp-set-included-ranges!", 2, 0, 0, (SCM o,SCM list),
+           "")
+#define FUNC_NAME s_tsp_set_included_ranges
+{
+  ASSERT_TSP(o);
+  SCM_ASSERT(scm_to_bool(scm_list_p(list)) ,list,SCM_ARG2,FUNC_NAME);
+  TSParser *tsp = FR(o);
+  uint32_t length=scm_to_uint32(scm_length(list));
+  TSRange *range[length];
+  for (unsigned i = 0; i < length; i++) {
+    SCM n=scm_list_ref(list, scm_from_unsigned_integer(i));
+    ASSERT_TSR(n);
+    range[i]=FR(n);
+  }
+  return scm_from_bool(ts_parser_set_included_ranges(FR(o),*range,length));
+}
+#undef FUNC_NAME
+
 SCM_DEFINE(tsp_set_timeout, "%tsp-set-timeout!", 2, 0, 0, (SCM p, SCM timeout),
            "") {
   ASSERT_TSP(p);

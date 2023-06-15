@@ -16,7 +16,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(libguile_ts_la_CFLAGS)
 EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm m4/ChangeLog
-SOURCES= ts/api.scm
+SOURCES= ts/api.scm ts.scm
 GUILE_WARNINGS =                                          \
   -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
   -Wmacro-use-before-definition                           \
@@ -25,7 +25,7 @@ GUILE_WARNINGS =                                          \
   -Wformat
 
 GOBJECTS = $(SOURCES:%.scm=%.go)
-CLEANFILES = $(GOBJECTS) $(TESTS:tests/%.scm=%.log)
+CLEANFILES = $(GOBJECTS) $(TESTS:tests/%.scm=%.log) $(BUILT_SOURCES)
 
 nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES) $(NODIST_SOURCES)
 nobase_go_DATA = $(GOBJECTS)

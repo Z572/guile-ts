@@ -17,7 +17,8 @@ PKG_CHECK_MODULES([GUILE], [guile-3.0])
 PKG_CHECK_MODULES([TREE_SITTER], [tree-sitter])
 # Checks for header files.
 AC_CHECK_HEADERS([libguile.h])
-LT_INIT([dlopen])
+AC_CHECK_HEADERS([tree_sitter/api.h])
+LT_INIT([dlopen disable-static])
 GUILE_PKG([3.0])
 
 GUILE_PROGS

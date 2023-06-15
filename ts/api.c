@@ -434,5 +434,7 @@ void init_ts_api() {
   scm_c_define("<ts-language>", tsl_type);
   scm_c_define("<%ts-parser>", tsp_type);
   scm_c_define("<ts-node>",tsn_type);
+#ifndef SCM_MAGIC_SNARFER
 #include "api.x"
+#endif
 }

@@ -1,6 +1,6 @@
 # -*- mode: org; -*-
 #+title: guile + tree-sitter
 
-requirement: guile3, tree-sitter,pkg-config, autoconf ,automake.
+requirement: guile3, tree-sitter,pkg-config, autoconf ,automake,libtool.
 
 Is a wip project.

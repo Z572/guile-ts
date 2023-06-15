@@ -418,7 +418,7 @@ SCM_DEFINE(tsl_version, "ts-language-version", 1, 0, 0,
 }
 
 void init_ts_api_enum() {
-#define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n)
+#define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n,NULL)
   DEFINE_ENUM(TSSymbolTypeRegular);
   DEFINE_ENUM(TSSymbolTypeAnonymous);
   DEFINE_ENUM(TSSymbolTypeAuxiliary);

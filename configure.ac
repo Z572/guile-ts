@@ -7,7 +7,7 @@ AC_CONFIG_SRCDIR([ts/api.c])
 AC_CONFIG_HEADERS([ts/config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([color-tests subdir-objects gnu])
-AC_CONFIG_FILES([Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 # Checks for programs.
 AC_PROG_CC

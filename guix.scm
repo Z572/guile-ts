@@ -37,6 +37,7 @@
      (list #:make-flags #~(list "GUILE_AUTO_COMPILE=0")))
     (native-inputs
      (list autoconf automake
+           libtool
            pkg-config
            guile-3.0-latest))
     (inputs (list guile-3.0-latest tree-sitter))

@@ -38,4 +38,20 @@
   (test-equal "set language"
     json-language
     (ts-parser-language
-     (make <ts-parser> #:language json-language))))
+     (make <ts-parser> #:language json-language)))
+  (test-assert "parse string"
+    (let ((parser (make <ts-parser> #:language json-language)))
+      (ts-tree? (ts-parser-parse-string parser #f "[1,null]"))))
+  (test-equal "root-node's parent"
+    #f
+    (let ((parser (make <ts-parser> #:language json-language)))
+      (ts-node-parent
+       (ts-tree-root-node
+        (ts-parser-parse-string parser #f "[1,null]")))))
+  (test-error
+   "child out of range"
+   'wrong-type-arg
+   (let* ((parser (make <ts-parser> #:language json-language))
+          (root (ts-tree-root-node
+                 (ts-parser-parse-string parser #f "[1,null]"))))
+     (ts-node-child root (1+ (ts-node-child-count root))))))

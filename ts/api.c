@@ -517,7 +517,8 @@ SCM_DEFINE(tsl_field_name_for_id, "ts-language-field-name-for-id", 2, 0, 0,
   SCM_ASSERT((c_fieldid <= ts_language_field_count(tsl)),
              fieldid, SCM_ARG2, FUNC_NAME);
   SCM_ASSERT((0 < scm_to_uint16(fieldid)),fieldid, SCM_ARG2, FUNC_NAME);
-  return scm_from_utf8_string(ts_language_field_name_for_id(tsl,c_fieldid));
+  const char* string=ts_language_field_name_for_id(tsl,c_fieldid);
+  return string ? scm_from_utf8_string(string) : SCM_BOOL_F;
 }
 #undef FUNC_NAME
 

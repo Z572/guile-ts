@@ -41,6 +41,12 @@
      (make <ts-parser> #:language json-language)))
   (test-equal "language version"
     14 (ts-language-version json-language))
+  (test-equal "ts-language-field-count"
+    2 (ts-language-field-count json-language))
+  (test-equal "ts-language-field-name-for-id"
+    "key" (ts-language-field-name-for-id json-language 1))
+  (test-error "ts-language-field-name-for-id out of value"
+              (ts-language-field-name-for-id json-language 30))
   (test-assert "parse string"
     (let ((parser (make <ts-parser> #:language json-language)))
       (ts-tree? (ts-parser-parse-string parser #f "[1,null]"))))

@@ -280,7 +280,10 @@ SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "") {
 SCM_DEFINE(tsn_string, "ts-node-string", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
-  return scm_from_utf8_string(ts_node_string(node->node));
+  char *string=ts_node_string(node->node);
+  SCM s_string=scm_from_utf8_string(string);
+  free(string);
+  return s_string;
 }
 
 SCM_DEFINE(tsn_null_p, "ts-node-null?", 1, 0, 0, (SCM o), "") {

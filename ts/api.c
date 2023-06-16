@@ -435,7 +435,8 @@ SCM_DEFINE_PUBLIC(tsn_child_by_field_id, "ts-node-child-by-field-id", 2, 0, 0,
            (SCM o,SCM n), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
-  return make_node(ts_node_child_by_field_id(node->node,scm_to_uint16(n)));
+  TSNode tsn=ts_node_child_by_field_id(node->node,scm_to_uint16(n));
+  return ts_node_is_null(tsn) ? SCM_BOOL_F : make_node(tsn);
 }
 
 SCM_DEFINE_PUBLIC(tsn_next_sibling, "ts-node-next-sibling", 1, 0, 0,

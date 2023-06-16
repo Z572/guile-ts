@@ -17,6 +17,7 @@
             ts-tree-language
             ts-node-field-name-for-child
             ts-node-string
+            ts-node-sexp
             ts-node-symbol
             ts-node-start-byte
             ts-node-start-point
@@ -88,6 +89,9 @@
             #:slot-set! %tsr-set-end-byte!
             #:accessor ts-range-end-byte
             #:init-keyword #:end-byte))
+
+(define-method (ts-node-sexp (node <ts-node>))
+  (call-with-input-string (ts-node-string node) read))
 
 (define (ts-tree? t)
   (is-a? t <ts-tree>))

@@ -59,6 +59,11 @@
       (ts-node-parent
        (ts-tree-root-node
         (ts-parser-parse-string parser #f "[1,null]"))))
+
+    (test-equal "ts-node-sexp"
+      '(document (array (number) (null)))
+      (ts-node-sexp root))
+
     (test-error
      "child out of range"
      'wrong-type-arg

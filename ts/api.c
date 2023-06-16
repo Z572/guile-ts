@@ -398,7 +398,7 @@ SCM_DEFINE(tsn_named_child, "ts-node-named-child", 2, 0, 0, (SCM o,SCM n), "")
   ASSERT_TSN(o);
   SCM_ASSERT(scm_to_bool(scm_less_p(n, tsn_named_child_count(o))),n,SCM_ARG2,FUNC_NAME);
   Node *node=FR(o);
-  return make_node(ts_node_child(node->node,scm_to_uint32(n)));
+  return make_node(ts_node_named_child(node->node,scm_to_uint32(n)));
 }
 #undef FUNC_NAME
 

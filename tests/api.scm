@@ -45,7 +45,8 @@
     2 (ts-language-field-count json-language))
   (test-equal "ts-language-field-name-for-id"
     "key" (ts-language-field-name-for-id json-language 1))
-  (test-error "ts-language-field-name-for-id out of value"
+  (test-error "ts-language-field-name-for-id: out of value"
+              #t
               (ts-language-field-name-for-id json-language 30))
 
   (let* ((parser (make <ts-parser> #:language json-language))
@@ -82,6 +83,7 @@
     (test-equal "ts-node-next-sibling"
       #f (ts-node-next-sibling
           (ts-node-child root (- (ts-node-child-count root) 1))))
+
     (test-equal "ts-node-prev-named-sibling"
       #f (ts-node-prev-named-sibling
           (ts-node-named-child root 0)))

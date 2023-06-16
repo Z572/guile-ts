@@ -39,19 +39,38 @@
     json-language
     (ts-parser-language
      (make <ts-parser> #:language json-language)))
+  (test-equal "language version"
+    14 (ts-language-version json-language))
   (test-assert "parse string"
     (let ((parser (make <ts-parser> #:language json-language)))
       (ts-tree? (ts-parser-parse-string parser #f "[1,null]"))))
-  (test-equal "root-node's parent"
-    #f
-    (let ((parser (make <ts-parser> #:language json-language)))
+  (let* ((source "[1,null]")
+         (parser (make <ts-parser> #:language json-language))
+         (root (ts-tree-root-node
+                (ts-parser-parse-string parser #f source))))
+    (test-equal "root-node's parent"
+      #f
       (ts-node-parent
        (ts-tree-root-node
-        (ts-parser-parse-string parser #f "[1,null]")))))
-  (test-error
-   "child out of range"
-   'wrong-type-arg
-   (let* ((parser (make <ts-parser> #:language json-language))
-          (root (ts-tree-root-node
-                 (ts-parser-parse-string parser #f "[1,null]"))))
-     (ts-node-child root (1+ (ts-node-child-count root))))))
+        (ts-parser-parse-string parser #f "[1,null]"))))
+    (test-error
+     "child out of range"
+     'wrong-type-arg
+     (ts-node-child root (1+ (ts-node-child-count root))))
+    (test-equal "ts-node-type"
+      "document" (ts-node-type root))
+    (test-equal "ts-node-prev-sibling"
+      #f (ts-node-prev-sibling
+          (ts-node-child root 0)))
+    (test-equal "ts-node-next-sibling"
+      #f (ts-node-next-sibling
+          (ts-node-child root (- (ts-node-child-count root) 1))))
+    (test-equal "ts-node-prev-named-sibling"
+      #f (ts-node-prev-named-sibling
+          (ts-node-named-child root 0)))
+    (test-equal "ts-node-next-named-sibling"
+      #f
+      (ts-node-next-named-sibling
+       (ts-node-named-child
+        root
+        (- (ts-node-named-child-count root) 1))))))

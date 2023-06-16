@@ -492,7 +492,7 @@ SCM_DEFINE(tsn_first_named_child_for_byte, "ts-node-first-named-child-for-byte"
 #undef FUNC_NAME
 
 
-SCM_DEFINE_PUBLIC(tsn_eq, "ts-node-eq?", 2, 0, 0,
+SCM_DEFINE(tsn_eq, "%ts-node-eq?", 2, 0, 0,
            (SCM o,SCM o2), "") {
   ASSERT_TSN(o);
   ASSERT_TSN(o2);

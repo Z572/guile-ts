@@ -64,6 +64,9 @@
                    #:accessor ts-parser-included-ranges
                    #:init-keyword #:include-ranges))
 
+(define-method (equal? (node1 <ts-node>) (node2 <ts-node>))
+  (%ts-node-eq? node1 node2))
+
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual
                #:slot-ref %tsr-start-point

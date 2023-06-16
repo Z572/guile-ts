@@ -15,6 +15,8 @@
             ts-parser-parse-string
             ts-tree-root-node
             ts-tree-language
+            ts-tree-delete
+            ts-tree-copy
             ts-node-field-name-for-child
             ts-node-string
             ts-node-sexp

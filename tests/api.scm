@@ -47,13 +47,18 @@
     "key" (ts-language-field-name-for-id json-language 1))
   (test-error "ts-language-field-name-for-id out of value"
               (ts-language-field-name-for-id json-language 30))
-  (test-assert "parse string"
-    (let ((parser (make <ts-parser> #:language json-language)))
-      (ts-tree? (ts-parser-parse-string parser #f "[1,null]"))))
+
+  (let* ((parser (make <ts-parser> #:language json-language))
+         (tree (ts-parser-parse-string parser #f "[1,null]")))
+    (test-assert "parse string"
+      (ts-tree? tree))
+    (when (ts-tree? tree)
+      (ts-tree-delete tree)))
+
   (let* ((source "[1,null]")
          (parser (make <ts-parser> #:language json-language))
-         (root (ts-tree-root-node
-                (ts-parser-parse-string parser #f source))))
+         (tree (ts-parser-parse-string parser #f source))
+         (root (ts-tree-root-node tree)))
     (test-equal "root-node's parent"
       #f
       (ts-node-parent
@@ -63,7 +68,8 @@
     (test-equal "ts-node-sexp"
       '(document (array (number) (null)))
       (ts-node-sexp root))
-
+    (test-assert "ts-tree-copy"
+      (not (equal? tree (ts-tree-copy tree))))
     (test-error
      "child out of range"
      'wrong-type-arg
@@ -84,4 +90,5 @@
       (ts-node-next-named-sibling
        (ts-node-named-child
         root
-        (- (ts-node-named-child-count root) 1))))))
+        (- (ts-node-named-child-count root) 1))))
+    (ts-tree-delete tree)))

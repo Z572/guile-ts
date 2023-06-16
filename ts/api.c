@@ -51,7 +51,6 @@ static inline SCM point_to_cons(TSPoint p) {
   return scm_cons(scm_from_uint32(p.row),scm_from_uint32(p.column));
 }
 static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
-static void ts_tree_finalizer(SCM scm) { ts_tree_delete(FR(scm)); }
 
 void init_ts_parser_type(void) {
   SCM name, slots;
@@ -140,11 +139,9 @@ SCM_DEFINE(tsr_set_end_byte, "%tsr-set-end-byte!", 2, 0, 0, (SCM r,SCM o),
 
 void init_ts_tree_type(void) {
   SCM name, slots;
-  scm_t_struct_finalize finalizer;
   name = scm_from_utf8_symbol("<ts-tree>");
   slots = scm_list_1(scm_from_utf8_symbol("%data"));
-  finalizer = ts_tree_finalizer;
-  tst_type = scm_make_foreign_object_type(name, slots, finalizer);
+  tst_type = scm_make_foreign_object_type(name, slots, NULL);
   scm_c_define("<ts-tree>",tst_type);
 }
 
@@ -159,7 +156,10 @@ static SCM make_node(TSNode tsn) {
   return make_foreign_object(tsn_type,node);
 }
 
-static void node_finalizer(SCM o) { free(FR(o));}
+static void node_finalizer(SCM o) {
+  Node *node=FR(o);
+  free(node);
+}
 static void init_ts_node_type(void) {
   SCM name, slots;
   scm_t_struct_finalize finalizer;
@@ -258,6 +258,13 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
 }
 
 /// Tree
+
+SCM_DEFINE(tst_delete, "ts-tree-delete", 1, 0, 0, (SCM o), "") {
+  ASSERT_TST(o);
+  TSTree *tst = FR(o);
+  ts_tree_delete(tst);
+  return SCM_UNSPECIFIED;
+}
 
 SCM_DEFINE(tst_copy, "ts-tree-copy", 1, 0, 0, (SCM o), "") {
   ASSERT_TST(o);

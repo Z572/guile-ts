@@ -7,6 +7,7 @@
   #:export (<ts-parser>
             <ts-range>
             ts-tree?
+            ts-node?
             ts-parser-language
             ts-parser-included-ranges
             ts-parser-timeout
@@ -102,6 +103,8 @@
   (let ((o (foreign-library-function lib name #:return-type '*)))
     (and o (%rf <ts-language> (o)))))
 
+(define (ts-node? o)
+  (is-a? o <ts-node>))
 (define-method (ts-node-childs (node <ts-node>))
   (map (cut ts-node-child node <>)
        (iota (ts-node-child-count node))))

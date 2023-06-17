@@ -150,6 +150,7 @@ typedef struct {
   TSNode node;
 } Node;
 
+
 static SCM make_node(TSNode tsn) {
   Node *node=scm_malloc(sizeof(Node));
   node->node=tsn;
@@ -167,6 +168,31 @@ static void init_ts_node_type(void) {
   slots = scm_list_1(scm_from_utf8_symbol("%data"));
   finalizer = node_finalizer;
   tsn_type = scm_make_foreign_object_type(name, slots, finalizer);
+}
+static SCM tstc_type;
+typedef struct {
+  TSTreeCursor cursor;
+} Tcursor;
+
+static void init_ts_tcursor_type(void) {
+  SCM name, slots;
+  name = scm_from_utf8_symbol("<ts-tree-cursor>");
+  slots = scm_list_2(scm_from_utf8_symbol("%data"),
+                     scm_from_utf8_symbol("%freed?"));
+  tstc_type = scm_make_foreign_object_type(name, slots, NULL);
+}
+#define ASSERT_TSTC(o, arg, func_name, string)                                 \
+  scm_assert_foreign_object_type(tstc_type, o);                                \
+  SCM_ASSERT_TYPE(                                                             \
+      scm_is_false(SCM_PACK(scm_foreign_object_unsigned_ref(cursor, 1))), o,   \
+      arg, func_name, string)
+
+static SCM make_tcursor(TSTreeCursor tstc) {
+  Tcursor *t=scm_malloc(sizeof(Tcursor));
+  t->cursor=tstc;
+  SCM ts=make_foreign_object(tstc_type,t);
+  scm_foreign_object_unsigned_set_x(ts, 1, SCM_UNPACK(SCM_BOOL_F));
+  return ts;
 }
 
 SCM_DEFINE_PUBLIC(tsp_new, "%tsp-new", 0, 0, 0, (), "") {
@@ -545,6 +571,53 @@ SCM_DEFINE(tsl_version, "ts-language-version", 1, 0, 0,
   return scm_from_uint32(ts_language_version(FR(o)));
 }
 
+SCM_DEFINE(tstc_cursor_new, "ts-tree-cursor-new", 1, 0, 0,
+           (SCM o), "") {
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  return make_tcursor(ts_tree_cursor_new(node->node));
+}
+
+SCM_DEFINE(tstc_cursor_delete, "ts-tree-cursor-delete", 1, 0, 0, (SCM cursor),
+           "")
+#define FUNC_NAME s_tstc_cursor_delete
+{
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "you delete deleted cursor!");
+  Tcursor *tc = FR(cursor);
+  scm_foreign_object_unsigned_set_x(cursor, 1, SCM_UNPACK(SCM_BOOL_T));
+  ts_tree_cursor_delete(&tc->cursor);
+  free(tc);
+  return SCM_UNSPECIFIED;
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(tstc_cursor_reset, "ts-tree-cursor-reset!", 2, 0, 0,
+           (SCM cursor,SCM node),
+           "")
+#define FUNC_NAME s_tstc_cursor_reset
+{
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  ASSERT_TSN(node);
+  Tcursor *tc = FR(cursor);
+  Node *c_node=FR(node);
+  TSNode t_node=c_node->node;
+  ts_tree_cursor_reset(&tc->cursor, t_node);
+  return SCM_UNSPECIFIED;
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(tstc_current_node, "ts-tree-cursor-current-node", 1, 0, 0,
+           (SCM cursor),
+           "")
+#define FUNC_NAME s_tstc_current_node
+{
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  Tcursor *tc = FR(cursor);
+  TSNode t_node=ts_tree_cursor_current_node(&tc->cursor);;
+  return ts_node_is_null(t_node) ? SCM_BOOL_F : make_node(t_node);
+}
+#undef FUNC_NAME
+
 void init_ts_api_enum() {
 #define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n,NULL)
   DEFINE_ENUM(TSSymbolTypeRegular);
@@ -560,6 +633,7 @@ void init_ts_api() {
   init_ts_node_type();
   init_ts_api_enum();
   init_ts_range_type();
+  init_ts_tcursor_type();
   scm_c_define("<ts-language>", tsl_type);
   scm_c_define("<%ts-parser>", tsp_type);
   scm_c_define("<ts-node>",tsn_type);

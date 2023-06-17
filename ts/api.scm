@@ -45,7 +45,11 @@
             ts-language-field-name-for-id
             ts-language-version
             ts-node-childs
-            ts-node-named-childs))
+            ts-node-named-childs
+            ts-tree-cursor-new
+            ts-tree-cursor-delete
+            ts-tree-cursor-reset!
+            ts-tree-cursor-current-node))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts")

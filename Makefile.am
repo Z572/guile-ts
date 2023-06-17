@@ -33,7 +33,7 @@ nobase_go_DATA = $(GOBJECTS)
 guile_install_go_files = install-nobase_goDATA
 $(guile_install_go_files): install-nobase_modDATA
 
-TESTS= tests/api.scm tests/gc.scm
+TESTS= tests/api.scm tests/gc.scm tests/tcursor.scm
 TEST_EXTENSIONS = .scm
 AM_SCM_LOG_FLAGS = --no-auto-compile
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)" abs_top_builddir="$(abs_top_builddir)"

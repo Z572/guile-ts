@@ -22,7 +22,6 @@
             ts-node-field-name-for-child
             ts-node-string
             ts-node-sexp
-            ts-node-symbol
             ts-node-start-byte
             ts-node-start-point
             ts-node-end-byte

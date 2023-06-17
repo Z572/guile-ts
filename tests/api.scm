@@ -115,4 +115,14 @@
        (ts-node-named-child
         root
         (- (ts-node-named-child-count root) 1))))
+    (ts-tree-delete tree))
+  (let* ((source "[1")
+         (parser (make <ts-parser>
+                   #:language json-language))
+         (tree (ts-parser-parse-string parser #f source))
+         (root (ts-tree-root-node tree)))
+    (test-assert "ts-node-error"
+      (ts-node-has-error? root))
+    (test-assert "ts-node-sexp: error string"
+      (ts-node-sexp root))
     (ts-tree-delete tree)))

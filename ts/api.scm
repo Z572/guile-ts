@@ -9,6 +9,7 @@
             ts-tree?
             ts-node?
             ts-parser-new
+            ts-parser-reset!
             ts-parser-language
             ts-parser-included-ranges
             ts-parser-timeout

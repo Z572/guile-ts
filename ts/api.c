@@ -262,7 +262,7 @@ SCM_DEFINE(tsp_timeout_micros, "%tsp-timeout", 1, 0, 0, (SCM o), "") {
   return scm_from_uint64(ts_parser_timeout_micros(tsp));
 }
 
-SCM_DEFINE(tsp_reset, "ts-parser-reset", 1, 0, 0, (SCM p), "") {
+SCM_DEFINE(tsp_reset, "ts-parser-reset!", 1, 0, 0, (SCM p), "") {
   ASSERT_TSP(p);
   ts_parser_reset(FR(p));
   return SCM_UNSPECIFIED;

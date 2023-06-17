@@ -591,6 +591,16 @@ SCM_DEFINE(tstc_cursor_delete, "ts-tree-cursor-delete", 1, 0, 0, (SCM cursor),
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tstc_cursor_copy, "ts-tree-cursor-copy", 1, 0, 0, (SCM cursor),
+           "")
+#define FUNC_NAME s_tstc_cursor_copy
+{
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "no deleted <ts-tree-cursor>");
+  Tcursor *tc = FR(cursor);
+  return make_tcursor(ts_tree_cursor_copy(&tc->cursor));
+}
+#undef FUNC_NAME
+
 SCM_DEFINE(tstc_cursor_reset, "ts-tree-cursor-reset!", 2, 0, 0,
            (SCM cursor,SCM node),
            "")

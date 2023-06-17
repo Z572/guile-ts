@@ -50,7 +50,8 @@
             ts-tree-cursor-new
             ts-tree-cursor-delete
             ts-tree-cursor-reset!
-            ts-tree-cursor-current-node))
+            ts-tree-cursor-current-node
+            ts-tree-cursor-copy))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts")

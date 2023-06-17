@@ -46,4 +46,15 @@
                   (ts-tree-cursor-reset! cursor #f))
       (ts-tree-cursor-delete cursor))
 
+    (let* ((_cursor (ts-tree-cursor-new root))
+           (cursor (ts-tree-cursor-copy _cursor)))
+      (test-assert "ts-tree-cursor-copy: copyed obj is different obj"
+        (not (equal? _cursor cursor)))
+
+      (ts-tree-cursor-delete _cursor)
+
+      (test-equal "ts-tree-cursor-copy: use new one after deleted original one"
+        root (ts-tree-cursor-current-node cursor))
+      (ts-tree-cursor-delete cursor))
+
     (ts-tree-delete tree)))

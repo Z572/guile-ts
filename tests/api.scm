@@ -74,6 +74,9 @@
       (ts-node-sexp root))
     (test-assert "ts-tree-copy"
       (not (equal? tree (ts-tree-copy tree))))
+    (test-error "ts-node-named-child: out of range 1"
+                'out-of-range
+                (ts-node-named-child root 30))
     (let ((node (ts-node-named-child
                  (ts-node-child root 0) 0) ))
       (test-equal "substring/read-only"
@@ -84,9 +87,15 @@
          (ts-node-end-byte node))))
     (test-equal "ts-node-start-byte"
       (string-length source) (ts-node-end-byte root))
+
+    (test-equal "ts-node-first-named-child-for-byte"
+      (ts-node-child root 0)
+      (ts-node-first-named-child-for-byte root 0))
+    (test-assert "ts-node-first-named-child-for-byte: > length"
+      (not (ts-node-first-named-child-for-byte root (string-length source))))
     (test-error
      "child out of range"
-     'wrong-type-arg
+     'out-of-range
      (ts-node-child root (1+ (ts-node-child-count root))))
     (test-equal "ts-node-type"
       "document" (ts-node-type root))

@@ -18,6 +18,17 @@ static SCM tsr_type;
 #define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o)
 #define FR(o) scm_foreign_object_ref(o, 0)
 
+static void value_range_error (const char* subr,SCM bad_val, SCM min, SCM max) SCM_NORETURN;
+static void
+value_range_error (const char* subr, SCM bad_val, SCM min, SCM max)
+{
+  scm_error (scm_out_of_range_key,
+	     subr,
+	     "Value out of range ~S to< ~S: ~S",
+             scm_list_3 (min, max, bad_val),
+             scm_list_1 (bad_val));
+}
+
 SCM type_table ;
 static inline SCM make_foreign_object(SCM type, void *o) {
   SCM p=scm_from_pointer(o, NULL);
@@ -419,8 +430,14 @@ SCM_DEFINE(tsn_child, "ts-node-child", 2, 0, 0, (SCM o,SCM n), "")
 #define FUNC_NAME s_tsn_child
 {
   ASSERT_TSN(o);
-  SCM_ASSERT(scm_to_bool(scm_less_p(n, tsn_child_count(o))),n,SCM_ARG2,FUNC_NAME);
   Node *node=FR(o);
+  TSNode t_node=node->node;
+  {
+    uint32_t count =ts_node_child_count(t_node);
+    if (scm_to_uint32(n) > count) {
+      value_range_error(FUNC_NAME, n, scm_from_uint32(0), scm_from_uint32(count));
+    }
+  }
   return make_node(ts_node_child(node->node,scm_to_uint32(n)));
 }
 #undef FUNC_NAME
@@ -435,8 +452,14 @@ SCM_DEFINE(tsn_named_child, "ts-node-named-child", 2, 0, 0, (SCM o,SCM n), "")
 #define FUNC_NAME s_tsn_named_child
 {
   ASSERT_TSN(o);
-  SCM_ASSERT(scm_to_bool(scm_less_p(n, tsn_named_child_count(o))),n,SCM_ARG2,FUNC_NAME);
   Node *node=FR(o);
+  TSNode t_node=node->node;
+  {
+    uint32_t count=ts_node_named_child_count(t_node);
+  if (scm_to_uint32(n) > count) {
+    value_range_error(FUNC_NAME ,n, scm_from_uint32(0),scm_from_uint32(count));
+  }
+}
   return make_node(ts_node_named_child(node->node,scm_to_uint32(n)));
 }
 #undef FUNC_NAME
@@ -513,7 +536,6 @@ SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 0, 0,
   Node *node=FR(o);
   TSNode t_node=node->node;
   uint32_t c_n =scm_to_uint32(n);
-  SCM_ASSERT((c_n <= (ts_node_end_byte(t_node))),n, SCM_ARG2, FUNC_NAME);
   return make_node(ts_node_first_child_for_byte(t_node,c_n));
 }
 #undef FUNC_NAME

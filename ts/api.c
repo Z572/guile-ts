@@ -152,6 +152,9 @@ typedef struct {
 
 
 static SCM make_node(TSNode tsn) {
+  if (ts_node_is_null(tsn)) {
+    return SCM_BOOL_F;
+}
   Node *node=scm_malloc(sizeof(Node));
   node->node=tsn;
   return make_foreign_object(tsn_type,node);
@@ -407,7 +410,7 @@ SCM_DEFINE(tsn_parent, "ts-node-parent", 1, 0, 0, (SCM o), "")
   Node *node=FR(o);
   TSNode tsn=node->node;
   TSNode root_node=ts_tree_root_node(node->node.tree);
-  return ts_node_eq(tsn,root_node) ? SCM_BOOL_F : make_node(ts_node_parent(tsn));
+  return make_node(ts_node_parent(tsn));
 }
 #undef FUNC_NAME
 
@@ -469,7 +472,7 @@ SCM_DEFINE_PUBLIC(tsn_child_by_field_id, "ts-node-child-by-field-id", 2, 0, 0,
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode tsn=ts_node_child_by_field_id(node->node,scm_to_uint16(n));
-  return ts_node_is_null(tsn) ? SCM_BOOL_F : make_node(tsn);
+  return make_node(tsn);
 }
 
 SCM_DEFINE_PUBLIC(tsn_next_sibling, "ts-node-next-sibling", 1, 0, 0,
@@ -477,21 +480,21 @@ SCM_DEFINE_PUBLIC(tsn_next_sibling, "ts-node-next-sibling", 1, 0, 0,
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode tsn=ts_node_next_sibling(node->node);
-  return ts_node_is_null(tsn) ? SCM_BOOL_F: make_node(tsn);
+  return make_node(tsn);
 }
 SCM_DEFINE_PUBLIC(tsn_prev_sibling, "ts-node-prev-sibling", 1, 0, 0,
            (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode tsn=ts_node_prev_sibling(node->node);
-  return ts_node_is_null(tsn) ? SCM_BOOL_F : make_node(tsn);
+  return make_node(tsn);
 }
 SCM_DEFINE_PUBLIC(tsn_next_named_sibling, "ts-node-next-named-sibling", 1, 0, 0,
            (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode tsn=ts_node_next_named_sibling(node->node);
-  return ts_node_is_null(tsn) ? SCM_BOOL_F : make_node(tsn);
+  return make_node(tsn);
 }
 
 SCM_DEFINE_PUBLIC(tsn_prev_named_sibling, "ts-node-prev-named-sibling", 1, 0, 0,
@@ -499,7 +502,7 @@ SCM_DEFINE_PUBLIC(tsn_prev_named_sibling, "ts-node-prev-named-sibling", 1, 0, 0,
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode tsn=ts_node_prev_named_sibling(node->node);
-  return ts_node_is_null(tsn) ? SCM_BOOL_F : make_node(tsn);
+  return make_node(tsn);
 }
 
 SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 0, 0,
@@ -523,7 +526,6 @@ SCM_DEFINE(tsn_first_named_child_for_byte, "ts-node-first-named-child-for-byte"
   Node *node=FR(o);
   TSNode t_node=node->node;
   uint32_t c_n =scm_to_uint32(n);
-  SCM_ASSERT((c_n <= (ts_node_end_byte(t_node))),n, SCM_ARG2, FUNC_NAME);
   return make_node(ts_node_first_named_child_for_byte(node->node,c_n));
 }
 #undef FUNC_NAME
@@ -623,8 +625,7 @@ SCM_DEFINE(tstc_current_node, "ts-tree-cursor-current-node", 1, 0, 0,
 {
   ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
   Tcursor *tc = FR(cursor);
-  TSNode t_node=ts_tree_cursor_current_node(&tc->cursor);;
-  return ts_node_is_null(t_node) ? SCM_BOOL_F : make_node(t_node);
+  return make_node(ts_tree_cursor_current_node(&tc->cursor));
 }
 #undef FUNC_NAME
 

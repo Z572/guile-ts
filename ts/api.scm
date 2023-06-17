@@ -8,6 +8,7 @@
             <ts-range>
             ts-tree?
             ts-node?
+            ts-parser-new
             ts-parser-language
             ts-parser-included-ranges
             ts-parser-timeout
@@ -107,6 +108,22 @@
 
 (define-method (initialize (obj <ts-parser>) initarg)
   (next-method obj (cons* #:%data (pointer-address (%tsp-new)) initarg)))
+
+(define* (ts-parser-new #:key
+                        language
+                        timeout
+                        include-ranges)
+  (apply make <ts-parser>
+         `(,@(if language
+                 `(#:language ,language)
+                 '())
+           ,@(if timeout
+                 `(#:timeout ,timeout)
+                 '())
+           ,@(if include-ranges
+                 `(#:include-ranges ,include-ranges)
+                 '()))
+         ))
 
 (define (get-ts-language-from-file lib name)
   (let ((o (foreign-library-function lib name #:return-type '*)))

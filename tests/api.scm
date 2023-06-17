@@ -17,9 +17,12 @@
     #f (ts-parser-parse-string (make <ts-parser>) #f "[]"))
   (test-equal "ts-parser-timeout is 0"
     0 (ts-parser-timeout (make <ts-parser>)))
-  (test-equal "ts-parser-time is 20"
+  (test-equal "make <ts-parser>: timeout is 20"
     20 (ts-parser-timeout (make <ts-parser>
                             #:timeout 20)))
+  (test-equal "ts-parser-new: timeout is 20"
+    20 (ts-parser-timeout (ts-parser-new
+                           #:timeout 20)))
   (test-equal "set! ts-parser-time to 20"
     20 (let ((o (make <ts-parser>)))
          (set! (ts-parser-timeout o) 20)

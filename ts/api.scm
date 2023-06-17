@@ -20,7 +20,6 @@
             ts-tree-delete
             ts-tree-copy
             ts-node-field-name-for-child
-            ts-node-string
             ts-node-sexp
             ts-node-start-byte
             ts-node-start-point

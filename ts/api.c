@@ -184,14 +184,14 @@ static void init_ts_tcursor_type(void) {
 #define ASSERT_TSTC(o, arg, func_name, string)                                 \
   scm_assert_foreign_object_type(tstc_type, o);                                \
   SCM_ASSERT_TYPE(                                                             \
-      scm_is_false(SCM_PACK(scm_foreign_object_unsigned_ref(cursor, 1))), o,   \
+      !(scm_foreign_object_unsigned_ref(cursor, 1)), o,   \
       arg, func_name, string)
 
 static SCM make_tcursor(TSTreeCursor tstc) {
   Tcursor *t=scm_malloc(sizeof(Tcursor));
   t->cursor=tstc;
   SCM ts=make_foreign_object(tstc_type,t);
-  scm_foreign_object_unsigned_set_x(ts, 1, SCM_UNPACK(SCM_BOOL_F));
+  scm_foreign_object_unsigned_set_x(ts, 1, false);
   return ts;
 }
 
@@ -582,9 +582,9 @@ SCM_DEFINE(tstc_cursor_delete, "ts-tree-cursor-delete", 1, 0, 0, (SCM cursor),
            "")
 #define FUNC_NAME s_tstc_cursor_delete
 {
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "you delete deleted cursor!");
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "no deleted <ts-tree-cursor>");
   Tcursor *tc = FR(cursor);
-  scm_foreign_object_unsigned_set_x(cursor, 1, SCM_UNPACK(SCM_BOOL_T));
+  scm_foreign_object_unsigned_set_x(cursor, 1, true);
   ts_tree_cursor_delete(&tc->cursor);
   free(tc);
   return SCM_UNSPECIFIED;

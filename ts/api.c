@@ -628,6 +628,19 @@ SCM_DEFINE(tstc_current_node, "ts-tree-cursor-current-node", 1, 0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tstc_current_field_name, "ts-tree-cursor-current-field-name", 1, 0, 0,
+           (SCM cursor),
+           "")
+#define FUNC_NAME s_tstc_current_node
+{
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  Tcursor *tc = FR(cursor);
+  const char *string=ts_tree_cursor_current_field_name(&tc->cursor);;
+  return string ? scm_from_utf8_string(string) : SCM_BOOL_F ;
+}
+#undef FUNC_NAME
+
+
 void init_ts_api_enum() {
 #define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n,NULL)
   DEFINE_ENUM(TSSymbolTypeRegular);

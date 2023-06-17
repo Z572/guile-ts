@@ -51,6 +51,7 @@
             ts-tree-cursor-delete
             ts-tree-cursor-reset!
             ts-tree-cursor-current-node
+            ts-tree-cursor-current-field-name
             ts-tree-cursor-copy))
 
 (eval-when (expand load eval)

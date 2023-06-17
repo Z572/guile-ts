@@ -71,6 +71,16 @@
       (ts-node-sexp root))
     (test-assert "ts-tree-copy"
       (not (equal? tree (ts-tree-copy tree))))
+    (let ((node (ts-node-named-child
+                 (ts-node-child root 0) 0) ))
+      (test-equal "substring/read-only"
+        "1"
+        (substring/read-only
+         source
+         (ts-node-start-byte node)
+         (ts-node-end-byte node))))
+    (test-equal "ts-node-start-byte"
+      (string-length source) (ts-node-end-byte root))
     (test-error
      "child out of range"
      'wrong-type-arg

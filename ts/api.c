@@ -374,7 +374,7 @@ SCM_DEFINE(tsn_has_error_p, "ts-node-has-error?", 1, 0, 0,
 SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
-  return scm_from_utf8_string(ts_node_type(node->node));
+  return scm_from_utf8_symbol(ts_node_type(node->node));
 }
 
 SCM_DEFINE(tsn_symbol, "ts-node-symbol", 1, 0, 0, (SCM o), "") {

@@ -663,6 +663,26 @@ SCM_DEFINE(tstc_current_field_name, "ts-tree-cursor-current-field-name", 1, 0, 0
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tstc_goto_parent, "ts-tree-cursor-goto-parent", 1, 0, 0,
+           (SCM cursor),
+           "")
+#define FUNC_NAME s_tstc_goto_parent
+{
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  Tcursor *tc = FR(cursor);
+  return scm_from_bool(ts_tree_cursor_goto_parent(&tc->cursor));
+}
+#undef FUNC_NAME
+SCM_DEFINE(tstc_goto_first_child, "ts-tree-cursor-goto-first-child", 1, 0, 0,
+           (SCM cursor),
+           "")
+#define FUNC_NAME s_tstc_goto_first_child
+{
+  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  Tcursor *tc = FR(cursor);
+  return scm_from_bool(ts_tree_cursor_goto_first_child(&tc->cursor));
+}
+#undef FUNC_NAME
 
 void init_ts_api_enum() {
 #define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n,NULL)

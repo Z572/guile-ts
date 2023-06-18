@@ -45,6 +45,8 @@
             ts-tree-cursor-current-field-name
             ts-tree-cursor-current-node
             ts-tree-cursor-delete
+            ts-tree-cursor-goto-parent
+            ts-tree-cursor-goto-first-child
             ts-tree-cursor-new
             ts-tree-cursor-reset!
             ts-tree-delete

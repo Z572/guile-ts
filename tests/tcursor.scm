@@ -57,4 +57,24 @@
         root (ts-tree-cursor-current-node cursor))
       (ts-tree-cursor-delete cursor))
 
+    (let* ((cursor (ts-tree-cursor-new root)))
+      (test-assert "ts-tree-cursor-goto-first-child"
+        (ts-tree-cursor-goto-first-child cursor))
+
+      (let ((c2 (ts-tree-cursor-copy cursor)))
+        (test-assert "ts-tree-cursor-goto-parent: move successfully"
+          (ts-tree-cursor-goto-parent cursor))
+        (ts-tree-cursor-delete c2))
+
+      (test-equal "ts-tree-cursor-goto-parent: go to parent"
+        root
+        (begin (ts-tree-cursor-goto-parent cursor)
+               (ts-tree-cursor-current-node cursor)))
+      (ts-tree-cursor-delete cursor))
+
+    (let ((cursor (ts-tree-cursor-new root)))
+      (test-equal "ts-tree-cursor-goto-parent: no parent"
+        #f (ts-tree-cursor-goto-parent cursor))
+      (ts-tree-cursor-delete cursor))
+
     (ts-tree-delete tree)))

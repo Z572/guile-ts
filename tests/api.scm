@@ -94,7 +94,13 @@
          (ts-node-start-byte node)
          (ts-node-end-byte node))))
     (test-equal "ts-node-start-byte"
+      0 (ts-node-start-byte root))
+    (test-equal "ts-node-end-byte"
       (string-length source) (ts-node-end-byte root))
+    (test-equal "ts-node-start-point"
+      (cons 0 0) (ts-node-start-point root))
+    (test-equal "ts-node-end-point"
+      (cons 0 (string-length source)) (ts-node-end-point root))
 
     (test-equal "ts-node-first-child-for-byte: named"
       (ts-node-child root 0)

@@ -1,8 +1,13 @@
 AUTOMAKE_OPTIONS = gnu
 SUFFIXES = .scm .go .c .x
 
-libguile_ts_la_SOURCES=ts/api.c \
-	ts/init.c ts/foreign.c ts/foreign.h
+libguile_ts_la_SOURCES= \
+	ts/api.h \
+	ts/api.c \
+	ts/init.c \
+	ts/foreign.h\
+	ts/foreign.c \
+	ts/query.c
 libguile_ts_la_CFLAGS=$(TREE_SITTER_CFLAGS) $(GUILE_CFLAGS)
 libguile_ts_la_LIBADD=$(TREE_SITTER_LIBS) $(GUILE_LIBS)
 lib_LTLIBRARIES = libguile_ts.la
@@ -16,7 +21,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(libguile_ts_la_CFLAGS)
 EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm
-SOURCES= ts/api.scm ts.scm
+SOURCES= ts/api.scm ts/query.scm ts.scm
 GUILE_WARNINGS =                                          \
   -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
   -Wmacro-use-before-definition                           \
@@ -33,7 +38,7 @@ nobase_go_DATA = $(GOBJECTS)
 guile_install_go_files = install-nobase_goDATA
 $(guile_install_go_files): install-nobase_modDATA
 
-TESTS= tests/api.scm tests/gc.scm tests/tcursor.scm
+TESTS= tests/api.scm tests/gc.scm tests/tcursor.scm tests/query.scm
 TEST_EXTENSIONS = .scm
 AM_SCM_LOG_FLAGS = --no-auto-compile
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)" abs_top_builddir="$(abs_top_builddir)"

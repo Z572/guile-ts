@@ -2,25 +2,19 @@
 #include <tree_sitter/api.h>
 #include <string.h>
 #include "foreign.h"
-
-static SCM tsp_type;
-static SCM tsl_type;
-static SCM tst_type;
-static SCM tsq_type;
-static SCM tsqc_type;
-static SCM tsn_type;
-static SCM tsr_type;
+#include "api.h"
+SCM tsp_type;
+SCM tsl_type;
+SCM tst_type;
+SCM tsq_type;
+SCM tsqc_type;
+SCM tsn_type;
+SCM tsr_type;
 #define ASSERT_TSP(o) scm_assert_foreign_object_type(tsp_type, o)
-#define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
 #define ASSERT_TST(o, arg, func_name, string) scm_assert_foreign_object_type(tst_type, o); \
   SCM_ASSERT_TYPE(                                                             \
       !(foreign_object_freed_p(o)), o,   \
       arg, func_name, string)
-#define ASSERT_TSN(o)                                                   \
-  scm_assert_foreign_object_type(tsn_type, o);                          \
-  SCM_ASSERT_TYPE(                                                      \
-      !(foreign_object_freed_p(node_tree(((Node*)(FR(o)))->node))), o,   \
-      NULL, NULL, "node have no delteed tree")
 #define ASSERT_TSQ(o) scm_assert_foreign_object_type(tsq_type, o)
 #define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o)
 #define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o)
@@ -136,12 +130,6 @@ void init_ts_tree_type(void) {
   scm_c_define("<ts-tree>",tst_type);
 }
 
-
-typedef struct {
-  TSNode node;
-} Node;
-
-
 static SCM make_node(TSNode tsn) {
   if (ts_node_is_null(tsn)) {
     return SCM_BOOL_F;
@@ -151,7 +139,7 @@ static SCM make_node(TSNode tsn) {
   return make_foreign_object(tsn_type,node);
 }
 
-static inline SCM node_tree(TSNode tsn) {
+SCM node_tree(TSNode tsn) {
   return make_foreign_object(tst_type, tsn.tree);
 }
 

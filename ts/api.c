@@ -418,10 +418,13 @@ SCM_DEFINE(tsn_end_point, "ts-node-end-point", 1, 0, 0, (SCM o), "") {
   return point_to_cons(ts_node_end_point(node->node));
 }
 
-SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 0, 0, (SCM o), "") {
+SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 1, 0,
+           (SCM o,SCM named), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
-  return scm_from_uint32(ts_node_child_count(node->node));
+  return scm_from_uint32(scm_is_true(named)
+                         ? ts_node_named_child_count(node->node)
+                         : ts_node_child_count(node->node));
 }
 
 SCM_DEFINE(tsn_parent, "ts-node-parent", 1, 0, 0, (SCM o), "")
@@ -436,41 +439,26 @@ SCM_DEFINE(tsn_parent, "ts-node-parent", 1, 0, 0, (SCM o), "")
 #undef FUNC_NAME
 
 
-SCM_DEFINE(tsn_child, "ts-node-child", 2, 0, 0, (SCM o,SCM n), "")
+SCM_DEFINE(tsn_child, "ts-node-child", 2, 1, 0, (SCM o,SCM n,SCM named), "")
 #define FUNC_NAME s_tsn_child
 {
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode t_node=node->node;
+  bool is_named=scm_is_true(named);
+  uint32_t c_n=scm_to_uint32(n);
   {
-    uint32_t count =ts_node_child_count(t_node);
-    if (scm_to_uint32(n) > count) {
+    uint32_t count =is_named
+      ? ts_node_named_child_count(t_node)
+      : ts_node_child_count(t_node);
+
+    if (c_n > count) {
       value_range_error(FUNC_NAME, n, scm_from_uint32(0), scm_from_uint32(count));
     }
   }
-  return make_node(ts_node_child(node->node,scm_to_uint32(n)));
-}
-#undef FUNC_NAME
-
-SCM_DEFINE(tsn_named_child_count, "ts-node-named-child-count", 1, 0, 0, (SCM o), "") {
-  ASSERT_TSN(o);
-  Node *node=FR(o);
-  return scm_from_uint32(ts_node_named_child_count(node->node));
-}
-
-SCM_DEFINE(tsn_named_child, "ts-node-named-child", 2, 0, 0, (SCM o,SCM n), "")
-#define FUNC_NAME s_tsn_named_child
-{
-  ASSERT_TSN(o);
-  Node *node=FR(o);
-  TSNode t_node=node->node;
-  {
-    uint32_t count=ts_node_named_child_count(t_node);
-  if (scm_to_uint32(n) > count) {
-    value_range_error(FUNC_NAME ,n, scm_from_uint32(0),scm_from_uint32(count));
-  }
-}
-  return make_node(ts_node_named_child(node->node,scm_to_uint32(n)));
+  return make_node(is_named
+                   ? ts_node_named_child(t_node,c_n)
+                   : ts_node_child(t_node,c_n));
 }
 #undef FUNC_NAME
 
@@ -508,60 +496,39 @@ SCM_DEFINE_PUBLIC(tsn_child_by_field_id, "ts-node-child-by-field-id", 2, 0, 0,
   return make_node(tsn);
 }
 
-SCM_DEFINE_PUBLIC(tsn_next_sibling, "ts-node-next-sibling", 1, 0, 0,
-           (SCM o), "") {
+SCM_DEFINE(tsn_next_sibling, "ts-node-next-sibling", 1, 1, 0,
+           (SCM o,SCM named), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
-  TSNode tsn=ts_node_next_sibling(node->node);
+
+  TSNode tsn= scm_is_true(named)
+    ? ts_node_next_named_sibling(node->node)
+    : ts_node_next_sibling(node->node);
   return make_node(tsn);
 }
-SCM_DEFINE_PUBLIC(tsn_prev_sibling, "ts-node-prev-sibling", 1, 0, 0,
-           (SCM o), "") {
+SCM_DEFINE(tsn_prev_sibling, "ts-node-prev-sibling", 2, 0, 0,
+           (SCM o,SCM named), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
-  TSNode tsn=ts_node_prev_sibling(node->node);
-  return make_node(tsn);
-}
-SCM_DEFINE_PUBLIC(tsn_next_named_sibling, "ts-node-next-named-sibling", 1, 0, 0,
-           (SCM o), "") {
-  ASSERT_TSN(o);
-  Node *node=FR(o);
-  TSNode tsn=ts_node_next_named_sibling(node->node);
+  TSNode tsn= scm_is_true(named)
+    ? ts_node_prev_named_sibling(node->node)
+    : ts_node_prev_sibling(node->node);
   return make_node(tsn);
 }
 
-SCM_DEFINE_PUBLIC(tsn_prev_named_sibling, "ts-node-prev-named-sibling", 1, 0, 0,
-           (SCM o), "") {
-  ASSERT_TSN(o);
-  Node *node=FR(o);
-  TSNode tsn=ts_node_prev_named_sibling(node->node);
-  return make_node(tsn);
-}
-
-SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 0, 0,
-           (SCM o,SCM n), "")
+SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 1, 0,
+           (SCM o,SCM n,SCM named), "")
 #define FUNC_NAME s_tsn_first_child_for_byte
 {
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode t_node=node->node;
   uint32_t c_n =scm_to_uint32(n);
-  return make_node(ts_node_first_child_for_byte(t_node,c_n));
+  return make_node(scm_is_true(named)
+                   ? ts_node_first_named_child_for_byte(t_node,c_n)
+                   : ts_node_first_child_for_byte(t_node,c_n));
 }
 #undef FUNC_NAME
-
-SCM_DEFINE(tsn_first_named_child_for_byte, "ts-node-first-named-child-for-byte"
-           , 2, 0, 0, (SCM o,SCM n), "")
-#define FUNC_NAME s_tsn_first_named_child_for_byte
-{
-  ASSERT_TSN(o);
-  Node *node=FR(o);
-  TSNode t_node=node->node;
-  uint32_t c_n =scm_to_uint32(n);
-  return make_node(ts_node_first_named_child_for_byte(node->node,c_n));
-}
-#undef FUNC_NAME
-
 
 SCM_DEFINE(tsn_eq, "%ts-node-eq?", 2, 0, 0,
            (SCM o,SCM o2), "") {

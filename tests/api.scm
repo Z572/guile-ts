@@ -82,11 +82,11 @@
       (ts-node-sexp root))
     (test-assert "ts-tree-copy"
       (not (equal? tree (ts-tree-copy tree))))
-    (test-error "ts-node-named-child: out of range 1"
+    (test-error "ts-node-child: named out of range 1"
                 'out-of-range
-                (ts-node-named-child root 30))
-    (let ((node (ts-node-named-child
-                 (ts-node-child root 0) 0) ))
+                (ts-node-child root 30 #t))
+    (let ((node (ts-node-child
+                 (ts-node-child root 0) 0 #t) ))
       (test-equal "substring/read-only"
         "1"
         (substring/read-only
@@ -96,11 +96,11 @@
     (test-equal "ts-node-start-byte"
       (string-length source) (ts-node-end-byte root))
 
-    (test-equal "ts-node-first-named-child-for-byte"
+    (test-equal "ts-node-first-child-for-byte: named"
       (ts-node-child root 0)
-      (ts-node-first-named-child-for-byte root 0))
-    (test-assert "ts-node-first-named-child-for-byte: > length"
-      (not (ts-node-first-named-child-for-byte root (string-length source))))
+      (ts-node-first-child-for-byte root 0 #t))
+    (test-assert "ts-node-first-child-for-byte: > length"
+      (not (ts-node-first-child-for-byte root (string-length source) #t)))
     (test-error
      "child out of range"
      'out-of-range
@@ -114,15 +114,18 @@
       #f (ts-node-next-sibling
           (ts-node-child root (- (ts-node-child-count root) 1))))
 
-    (test-equal "ts-node-prev-named-sibling"
-      #f (ts-node-prev-named-sibling
-          (ts-node-named-child root 0)))
-    (test-equal "ts-node-next-named-sibling"
+    (test-equal "ts-node-prev-sibling: named"
+      #f (ts-node-prev-sibling
+          (ts-node-child root 0 #t)
+          1
+          #t))
+    (test-equal "ts-node-next-sibling: named"
       #f
-      (ts-node-next-named-sibling
-       (ts-node-named-child
+      (ts-node-next-sibling
+       (ts-node-child
         root
-        (- (ts-node-named-child-count root) 1))))
+        (- (ts-node-named-child-count root) 1) #t)
+       #t))
     (ts-tree-delete tree))
   (let* ((source "[1")
          (parser (make <ts-parser>

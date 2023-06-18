@@ -19,9 +19,11 @@
       (begin
         (do ((i 0 (+ i 1)))
             ((> i n))
-          (ts-node-next-named-sibling
-           (ts-node-named-child
+          (ts-node-next-sibling
+           (ts-node-child
             root
-            (- (ts-node-named-child-count root) 1))))
+            (- (ts-node-child-count root #t) 1)
+            #t)
+           #t))
         (ts-node-sexp root)))
     (ts-tree-delete tree)))

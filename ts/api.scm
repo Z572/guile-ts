@@ -19,13 +19,11 @@
             ts-node-extra?
             ts-node-field-name-for-child
             ts-node-first-child-for-byte
-            ts-node-first-named-child-for-byte
             ts-node-has-changes?
             ts-node-has-error?
             ts-node-missing?
-            ts-node-named-child
-            ts-node-named-child-count
-            ts-node-named-childs
+            ts-node-prev-sibling
+            ts-node-next-sibling
             ts-node-named?
             ts-node-null?
             ts-node-parent
@@ -138,10 +136,11 @@
 
 (define (ts-node? o)
   (is-a? o <ts-node>))
+
 (define-method (ts-node-childs (node <ts-node>))
   (map (cut ts-node-child node <>)
        (iota (ts-node-child-count node))))
 
-(define-method (ts-node-named-childs (node <ts-node>))
-  (map (cut ts-node-named-child node <>)
-       (iota (ts-node-named-child-count node))))
+(define-method (ts-node-childs (node <ts-node>) named)
+  (map (cut ts-node-child node <> named)
+       (iota (ts-node-child-count node named))))

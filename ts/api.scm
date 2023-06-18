@@ -1,5 +1,6 @@
 (define-module (ts api)
   #:use-module (oop goops)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-26)
   #:use-module (system foreign)
   #:use-module (system foreign-library)
@@ -75,6 +76,13 @@
 
 (define-method (equal? (node1 <ts-node>) (node2 <ts-node>))
   (%ts-node-eq? node1 node2))
+(define-method (write (node <ts-node>) port)
+  (format port "#<~a ~s in ~a-~a ~x>"
+          (class-name (class-of node))
+          (ts-node-type node)
+          (ts-node-start-byte node)
+          (ts-node-end-byte node)
+          (object-address node)))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual

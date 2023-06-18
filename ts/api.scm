@@ -78,12 +78,16 @@
 (define-method (equal? (node1 <ts-node>) (node2 <ts-node>))
   (%ts-node-eq? node1 node2))
 (define-method (write (node <ts-node>) port)
-  (format port "#<~a ~s in ~a-~a ~x>"
-          (class-name (class-of node))
-          (ts-node-type node)
-          (ts-node-start-byte node)
-          (ts-node-end-byte node)
-          (object-address node)))
+  (if %tsn-tree-freed?
+      (format port "#<~a (tree is deleted) ~x>"
+              (class-name (class-of node))
+              (object-address node))
+      (format port "#<~a ~s in ~a-~a ~x>"
+              (class-name (class-of node))
+              (ts-node-type node)
+              (ts-node-start-byte node)
+              (ts-node-end-byte node)
+              (object-address node))))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual

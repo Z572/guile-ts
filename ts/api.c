@@ -11,8 +11,14 @@ static SCM tsn_type;
 static SCM tsr_type;
 #define ASSERT_TSP(o) scm_assert_foreign_object_type(tsp_type, o)
 #define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
-#define ASSERT_TST(o) scm_assert_foreign_object_type(tst_type, o)
-#define ASSERT_TSN(o) scm_assert_foreign_object_type(tsn_type, o)
+#define ASSERT_TST(o, arg, func_name, string) scm_assert_foreign_object_type(tst_type, o); \
+  SCM_ASSERT_TYPE(                                                             \
+      !(scm_foreign_object_unsigned_ref(o, 1)), o,   \
+      arg, func_name, string)
+#define ASSERT_TSN(o) scm_assert_foreign_object_type(tsn_type, o); \
+  SCM_ASSERT_TYPE(                                                             \
+      !(scm_foreign_object_unsigned_ref(node_tree(((Node*)(FR(o)))->node), 1)), o,   \
+      NULL, NULL, "node have no delteed tree")
 #define ASSERT_TSQ(o) scm_assert_foreign_object_type(tsq_type, o)
 #define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o)
 #define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o)
@@ -151,7 +157,8 @@ SCM_DEFINE(tsr_set_end_byte, "%tsr-set-end-byte!", 2, 0, 0, (SCM r,SCM o),
 void init_ts_tree_type(void) {
   SCM name, slots;
   name = scm_from_utf8_symbol("<ts-tree>");
-  slots = scm_list_1(scm_from_utf8_symbol("%data"));
+  slots = scm_list_2(scm_from_utf8_symbol("%data"),
+                     scm_from_utf8_symbol("%freed?"));
   tst_type = scm_make_foreign_object_type(name, slots, NULL);
   scm_c_define("<ts-tree>",tst_type);
 }
@@ -169,6 +176,15 @@ static SCM make_node(TSNode tsn) {
   Node *node=scm_malloc(sizeof(Node));
   node->node=tsn;
   return make_foreign_object(tsn_type,node);
+}
+
+static inline SCM node_tree(TSNode tsn) {
+  return make_foreign_object(tst_type, tsn.tree);
+}
+
+SCM_DEFINE(tsn_tree, "%tsn-tree-freed?", 1, 0, 0, (SCM tsn),
+           "") {
+  return scm_from_bool(scm_foreign_object_unsigned_ref(node_tree(((Node *)(FR(tsn)))->node),1));
 }
 
 static void node_finalizer(SCM o) {
@@ -288,7 +304,7 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
 {
   ASSERT_TSP(p);
   if (scm_is_true(tree)) {
-    ASSERT_TST(tree);
+    ASSERT_TST(tree,SCM_ARG2,FUNC_NAME,"no deleted <ts-tree>");
   };
   char* cstring=scm_to_utf8_string(string);
   uint32_t clength=SCM_UNBNDP(length) ? strlen(cstring) : scm_to_uint32(length);
@@ -301,36 +317,51 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
       ts_parser_parse_string(FR(p), (scm_is_true(tree)) ? (FR(tree)) : NULL,
                              cstring,
                              clength);
-  return tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
+  SCM s_tst=tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
+  if (tst) scm_foreign_object_unsigned_set_x(s_tst, 1, false);
+  return s_tst;
 }
 #undef FUNC_NAME
 
 /// Tree
 
-SCM_DEFINE(tst_delete, "ts-tree-delete", 1, 0, 0, (SCM o), "") {
-  ASSERT_TST(o);
+SCM_DEFINE(tst_delete, "ts-tree-delete", 1, 0, 0, (SCM o), "")
+#define FUNC_NAME s_tst_delete
+{
+  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
   TSTree *tst = FR(o);
+  scm_foreign_object_unsigned_set_x(o, 1, true);
   ts_tree_delete(tst);
   return SCM_UNSPECIFIED;
 }
+#undef FUNC_NAME
 
-SCM_DEFINE(tst_copy, "ts-tree-copy", 1, 0, 0, (SCM o), "") {
-  ASSERT_TST(o);
+SCM_DEFINE(tst_copy, "ts-tree-copy", 1, 0, 0, (SCM o), "")
+#define FUNC_NAME s_tst_copy
+{
+  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
   TSTree *tst = FR(o);
   return make_foreign_object(tst_type, ts_tree_copy(tst));
 }
+#undef FUNC_NAME
 
-SCM_DEFINE(tst_language, "ts-tree-language", 1, 0, 0, (SCM o), "") {
-  ASSERT_TST(o);
+SCM_DEFINE(tst_language, "ts-tree-language", 1, 0, 0, (SCM o), "")
+#define FUNC_NAME s_tst_language
+{
+  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
   TSTree *tst = FR(o);
   return make_foreign_object(tsl_type, ts_tree_language(tst)) ;
 }
+#undef FUNC_NAME
 
-SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "") {
-  ASSERT_TST(o);
+SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "")
+#define FUNC_NAME s_tst_root_node
+{
+  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
   TSTree *tst = FR(o);
   return make_node(ts_tree_root_node(tst));
 }
+#undef FUNC_NAME
 
 SCM_DEFINE(tsn_string, "ts-node-string", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);

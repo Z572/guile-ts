@@ -145,4 +145,14 @@
       (ts-node-has-error? root))
     (test-assert "ts-node-sexp: error string"
       (ts-node-sexp root))
-    (ts-tree-delete tree)))
+    (ts-tree-delete tree))
+  (let* ((parser (make <ts-parser> #:language json-language))
+         (tree (ts-parser-parse-string parser #f "[1,null]")))
+    (ts-tree-delete tree)
+    (test-error "error use deleted tree" #t (ts-tree-root-node tree)))
+  (let* ((parser (make <ts-parser> #:language json-language))
+         (tree (ts-parser-parse-string parser #f "[1,null]"))
+         (root (ts-tree-root-node tree)))
+    (ts-tree-delete tree)
+    (test-error "error when node's tree is deleted"
+                #t (ts-node-has-error? root))))

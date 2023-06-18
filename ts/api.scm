@@ -146,8 +146,8 @@
   (is-a? o <ts-node>))
 
 (define-method (ts-node-childs (node <ts-node>))
-  (map (cut ts-node-child node <>)
-       (iota (ts-node-child-count node))))
+  (map (cut ts-node-child node <> #f)
+       (iota (ts-node-child-count node #f))))
 
 (define-method (ts-node-childs (node <ts-node>) named)
   (map (cut ts-node-child node <> named)

@@ -106,7 +106,7 @@
      'out-of-range
      (ts-node-child root (1+ (ts-node-child-count root))))
     (test-equal "ts-node-type"
-      'document (ts-node-type root))
+      "document" (ts-node-type root))
     (test-equal "ts-node-prev-sibling"
       #f (ts-node-prev-sibling
           (ts-node-child root 0)))

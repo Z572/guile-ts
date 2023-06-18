@@ -2,13 +2,13 @@ AUTOMAKE_OPTIONS = gnu
 SUFFIXES = .scm .go .c .x
 
 libguile_ts_la_SOURCES=ts/api.c \
-	ts/init.c
+	ts/init.c ts/foreign.c ts/foreign.h
 libguile_ts_la_CFLAGS=$(TREE_SITTER_CFLAGS) $(GUILE_CFLAGS)
 libguile_ts_la_LIBADD=$(TREE_SITTER_LIBS) $(GUILE_LIBS)
 lib_LTLIBRARIES = libguile_ts.la
 $(SOURCES):  $(lib_LTLIBRARIES)
 ACLOCAL_AMFLAGS = -I m4
-BUILT_SOURCES= $(libguile_ts_la_SOURCES:%.c=%.x)
+BUILT_SOURCES= $(filter %.x, $(libguile_ts_la_SOURCES:%.c=%.x))
 moddir=$(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)
 godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 .scm.go:

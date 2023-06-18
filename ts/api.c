@@ -1,6 +1,7 @@
 #include <libguile.h>
 #include <tree_sitter/api.h>
 #include <string.h>
+#include "foreign.h"
 
 static SCM tsp_type;
 static SCM tsl_type;
@@ -13,39 +14,30 @@ static SCM tsr_type;
 #define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
 #define ASSERT_TST(o, arg, func_name, string) scm_assert_foreign_object_type(tst_type, o); \
   SCM_ASSERT_TYPE(                                                             \
-      !(scm_foreign_object_unsigned_ref(o, 1)), o,   \
+      !(foreign_object_freed_p(o)), o,   \
       arg, func_name, string)
-#define ASSERT_TSN(o) scm_assert_foreign_object_type(tsn_type, o); \
-  SCM_ASSERT_TYPE(                                                             \
-      !(scm_foreign_object_unsigned_ref(node_tree(((Node*)(FR(o)))->node), 1)), o,   \
+#define ASSERT_TSN(o)                                                   \
+  scm_assert_foreign_object_type(tsn_type, o);                          \
+  SCM_ASSERT_TYPE(                                                      \
+      !(foreign_object_freed_p(node_tree(((Node*)(FR(o)))->node))), o,   \
       NULL, NULL, "node have no delteed tree")
 #define ASSERT_TSQ(o) scm_assert_foreign_object_type(tsq_type, o)
 #define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o)
 #define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o)
-#define FR(o) scm_foreign_object_ref(o, 0)
+#define FR(o) foreign_object_ref(o)
 
 static void value_range_error (const char* subr,SCM bad_val, SCM min, SCM max) SCM_NORETURN;
 static void
 value_range_error (const char* subr, SCM bad_val, SCM min, SCM max)
 {
   scm_error (scm_out_of_range_key,
-	     subr,
-	     "Value out of range ~S to< ~S: ~S",
+             subr,
+             "Value out of range ~S to< ~S: ~S",
              scm_list_3 (min, max, bad_val),
              scm_list_1 (bad_val));
 }
 
-SCM type_table ;
-static inline SCM make_foreign_object(SCM type, void *o) {
-  SCM p=scm_from_pointer(o, NULL);
-  SCM d=scm_hash_ref(type_table, p, SCM_BOOL_F);
-  if (scm_is_false(d)) {
-    SCM obj=scm_make_foreign_object_1(type, o);
-    scm_hash_set_x(type_table, p, obj);
-  return obj;
-}
-  return d;
-}
+extern SCM type_table ;
 
 SCM_DEFINE(ref_or_set, "%rf", 2, 0, 0, (SCM type,SCM point),
            "") {
@@ -70,30 +62,15 @@ static inline SCM point_to_cons(TSPoint p) {
 static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
 
 void init_ts_parser_type(void) {
-  SCM name, slots;
-  scm_t_struct_finalize finalizer;
-  name = scm_from_utf8_symbol("<%ts-parser>");
-  slots = scm_list_1(scm_from_utf8_symbol("%data"));
-  finalizer = ts_parser_finalizer;
-  tsp_type = scm_make_foreign_object_type(name, slots, finalizer);
+  tsp_type = make_foreign_object_type("<%ts-parser>", ts_parser_finalizer);
 }
 
 void init_ts_language_type(void) {
-  SCM name, slots;
-  scm_t_struct_finalize finalizer;
-  name = scm_from_utf8_symbol("<ts-language>");
-  slots = scm_list_1(scm_from_utf8_symbol("%data"));
-  finalizer = NULL;
-  tsl_type = scm_make_foreign_object_type(name, slots, finalizer);
+  tsl_type = make_foreign_object_type("<ts-language>", NULL);
 }
 
 void init_ts_range_type(void) {
-  SCM name, slots;
-  scm_t_struct_finalize finalizer;
-  name = scm_from_utf8_symbol("<%ts-range>");
-  slots = scm_list_1(scm_from_utf8_symbol("%data"));
-  finalizer = NULL;
-  tsr_type = scm_make_foreign_object_type(name, slots, finalizer);
+  tsr_type = make_foreign_object_type("<%ts-range>",NULL);
   scm_c_define("<%ts-range>", tsr_type);
 }
 
@@ -155,11 +132,7 @@ SCM_DEFINE(tsr_set_end_byte, "%tsr-set-end-byte!", 2, 0, 0, (SCM r,SCM o),
 }
 
 void init_ts_tree_type(void) {
-  SCM name, slots;
-  name = scm_from_utf8_symbol("<ts-tree>");
-  slots = scm_list_2(scm_from_utf8_symbol("%data"),
-                     scm_from_utf8_symbol("%freed?"));
-  tst_type = scm_make_foreign_object_type(name, slots, NULL);
+  tst_type = make_foreign_object_type("<ts-tree>", NULL);
   scm_c_define("<ts-tree>",tst_type);
 }
 
@@ -184,7 +157,7 @@ static inline SCM node_tree(TSNode tsn) {
 
 SCM_DEFINE(tsn_tree, "%tsn-tree-freed?", 1, 0, 0, (SCM tsn),
            "") {
-  return scm_from_bool(scm_foreign_object_unsigned_ref(node_tree(((Node *)(FR(tsn)))->node),1));
+  return scm_from_bool(foreign_object_freed_p(node_tree(((Node *)(FR(tsn)))->node)));
 }
 
 static void node_finalizer(SCM o) {
@@ -192,12 +165,7 @@ static void node_finalizer(SCM o) {
   free(node);
 }
 static void init_ts_node_type(void) {
-  SCM name, slots;
-  scm_t_struct_finalize finalizer;
-  name = scm_from_utf8_symbol("<ts-node>");
-  slots = scm_list_1(scm_from_utf8_symbol("%data"));
-  finalizer = node_finalizer;
-  tsn_type = scm_make_foreign_object_type(name, slots, finalizer);
+  tsn_type=make_foreign_object_type("<ts-node>", node_finalizer);
 }
 static SCM tstc_type;
 typedef struct {
@@ -205,23 +173,19 @@ typedef struct {
 } Tcursor;
 
 static void init_ts_tcursor_type(void) {
-  SCM name, slots;
-  name = scm_from_utf8_symbol("<ts-tree-cursor>");
-  slots = scm_list_2(scm_from_utf8_symbol("%data"),
-                     scm_from_utf8_symbol("%freed?"));
-  tstc_type = scm_make_foreign_object_type(name, slots, NULL);
+  tstc_type = make_foreign_object_type("<ts-tree-cursor>", NULL);
 }
 #define ASSERT_TSTC(o, arg, func_name, string)                                 \
   scm_assert_foreign_object_type(tstc_type, o);                                \
   SCM_ASSERT_TYPE(                                                             \
-      !(scm_foreign_object_unsigned_ref(cursor, 1)), o,   \
+      !(foreign_object_freed_p(cursor)), o,   \
       arg, func_name, string)
 
 static SCM make_tcursor(TSTreeCursor tstc) {
   Tcursor *t=scm_malloc(sizeof(Tcursor));
   t->cursor=tstc;
   SCM ts=make_foreign_object(tstc_type,t);
-  scm_foreign_object_unsigned_set_x(ts, 1, false);
+  foreign_object_set_freed(ts, false);
   return ts;
 }
 
@@ -318,7 +282,7 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
                              cstring,
                              clength);
   SCM s_tst=tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
-  if (tst) scm_foreign_object_unsigned_set_x(s_tst, 1, false);
+  if (tst) foreign_object_set_freed(s_tst, false);
   return s_tst;
 }
 #undef FUNC_NAME
@@ -330,7 +294,7 @@ SCM_DEFINE(tst_delete, "ts-tree-delete", 1, 0, 0, (SCM o), "")
 {
   ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
   TSTree *tst = FR(o);
-  scm_foreign_object_unsigned_set_x(o, 1, true);
+  foreign_object_set_freed(o, true);
   ts_tree_delete(tst);
   return SCM_UNSPECIFIED;
 }
@@ -633,7 +597,7 @@ SCM_DEFINE(tstc_cursor_delete, "ts-tree-cursor-delete", 1, 0, 0, (SCM cursor),
 {
   ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "no deleted <ts-tree-cursor>");
   Tcursor *tc = FR(cursor);
-  scm_foreign_object_unsigned_set_x(cursor, 1, true);
+  foreign_object_set_freed(cursor, true);
   ts_tree_cursor_delete(&tc->cursor);
   free(tc);
   return SCM_UNSPECIFIED;

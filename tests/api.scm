@@ -59,6 +59,14 @@
     (when (ts-tree? tree)
       (ts-tree-delete tree)))
 
+  (let* ((parser (make <ts-parser> #:language json-language)))
+    (test-error "ts-parser-parse-string: out of lenght"
+                'out-of-range
+                (ts-parser-parse-string parser #f "[1,null]" 200))
+    (test-error "ts-parser-parse-string: wrong-type-arg"
+                'wrong-type-arg
+                (ts-parser-parse-string parser #f "[1,null]" #())))
+
   (let* ((source "[1,null]")
          (parser (make <ts-parser> #:language json-language))
          (tree (ts-parser-parse-string parser #f source))

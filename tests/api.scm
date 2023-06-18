@@ -126,6 +126,15 @@
         root
         (- (ts-node-named-child-count root) 1) #t)
        #t))
+
+    (test-equal "ts-node-descendant-for-byte-range"
+      (ts-node-child root 0)
+      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 1))
+
+    (test-equal "ts-node-descendant-for-byte-range: named"
+      (ts-node-child root 0 #t)
+      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 1 #t))
+
     (ts-tree-delete tree))
   (let* ((source "[1")
          (parser (make <ts-parser>

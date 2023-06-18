@@ -530,6 +530,23 @@ SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 1, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tsn_descendant_for_byte_range, "ts-node-descendant-for-byte-range", 3, 1, 0,
+           (SCM o,SCM start,SCM end,SCM named), "")
+#define FUNC_NAME s_tsn_descendant_for_byte_range
+{
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  TSNode t_node=node->node;
+  uint32_t c_start =  scm_to_uint32(start);
+  uint32_t c_end =  scm_to_uint32(end);
+  return make_node(scm_is_true(named)
+                   ? ts_node_named_descendant_for_byte_range(t_node,c_start,c_end)
+                   : ts_node_descendant_for_byte_range(t_node,c_start,c_end));
+}
+#undef FUNC_NAME
+
+
+
 SCM_DEFINE(tsn_eq, "%ts-node-eq?", 2, 0, 0,
            (SCM o,SCM o2), "") {
   ASSERT_TSN(o);

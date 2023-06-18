@@ -15,6 +15,7 @@
             ts-node-child-by-field-name
             ts-node-child-count
             ts-node-childs
+            ts-node-descendant-for-byte-range
             ts-node-end-byte
             ts-node-end-point
             ts-node-extra?

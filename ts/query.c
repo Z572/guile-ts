@@ -94,17 +94,18 @@ SCM_DEFINE(query_cursor_delete, "ts-query-cursor-delete", 1,0, 0,
 #undef FUNC_NAME
 
 SCM_DEFINE(query_cursor_exec, "ts-query-cursor-exec", 3,0, 0,
-           (SCM qc,SCM q,SCM node),
+           (SCM qc,SCM q,SCM tnode),
            "")
 #define FUNC_NAME s_query_cursor_exec
 {
   ASSERT_QC(qc,SCM_ARG1,FUNC_NAME,"no deleted <ts-query-cursor>.");
   ASSERT_QUERY(q,SCM_ARG1,FUNC_NAME,"no deleted <ts-query>");;
   scm_remember_upto_here_1(q);
-  ASSERT_TSN(node);
+  ASSERT_TSN(tnode);
+  Node *node=foreign_object_ref(tnode);
   ts_query_cursor_exec(foreign_object_ref(qc),
                        foreign_object_ref(q),
-                       ((Node *)(foreign_object_ref(node)))->node);
+                       node_ref(node));
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME

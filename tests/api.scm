@@ -91,6 +91,33 @@
     (test-error "ts-node-child: named out of range 1"
                 'out-of-range
                 (ts-node-child root 30 #t))
+
+    (test-equal "ts-node-child-count: 1"
+      1 (ts-node-child-count root))
+    (test-equal "ts-node-child-count: 2"
+      5 (ts-node-child-count (ts-node-child root 0)))
+    (test-equal "ts-node-child-count: named 1"
+      1 (ts-node-child-count root #t))
+    (test-equal "ts-node-child-count: named 2"
+      2 (ts-node-child-count (ts-node-child root 0) #t))
+
+    (test-equal "ts-node-childs: 1"
+      1 (length (ts-node-childs root #f)))
+    (test-equal "ts-node-childs: 2"
+      5 (length (ts-node-childs
+                 (ts-node-child root 0) #f)))
+    (test-equal "ts-node-childs: no provide NAMED? 1"
+      1 (length (ts-node-childs root)))
+    (test-equal "ts-node-childs: no provide NAMED? 2"
+      5 (length (ts-node-childs
+                 (ts-node-child root 0))))
+    (test-equal "ts-node-childs: named 1"
+      1 (length (ts-node-childs root #t)))
+    (test-equal "ts-node-childs: named 2"
+      2 (length (ts-node-childs
+                 (ts-node-child root 0)
+                 #t)))
+
     (let ((node (ts-node-child
                  (ts-node-child root 0) 0 #t) ))
       (test-equal "substring/read-only"

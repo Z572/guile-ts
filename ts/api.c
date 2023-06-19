@@ -414,8 +414,9 @@ SCM_DEFINE(tsn_end_point, "ts-node-end-point", 1, 0, 0, (SCM o), "") {
 SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 1, 0,
            (SCM o,SCM named), "") {
   ASSERT_TSN(o);
+  bool c_named=SCM_UNBNDP(named) ? false : scm_to_bool(named);
   Node *node=FR(o);
-  return scm_from_uint32(scm_is_true(named)
+  return scm_from_uint32(c_named
                          ? ts_node_named_child_count(node_ref(node))
                          : ts_node_child_count(node_ref(node)));
 }
@@ -438,7 +439,7 @@ SCM_DEFINE(tsn_child, "ts-node-child", 2, 1, 0, (SCM o,SCM n,SCM named), "")
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode t_node=node_ref(node);
-  bool is_named=scm_is_true(named);
+  bool is_named=SCM_UNBNDP(named) ? false : scm_to_bool(named);
   uint32_t c_n=scm_to_uint32(n);
   {
     uint32_t count =is_named

@@ -2,32 +2,29 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "ci-test"]
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  build:
+  guix-build:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: install packages
-      run: sudo apt-get install -y guile-3.0-dev libtree-sitter-dev
-    - name: setenv
-      run: export LANG=C.UTF-8 TERM=dumb VERBOSE=true GUILE_AUTO_COMPILE=0
-    - name: bootstrap
-      run: ./bootstrap
 
-    - name: configure
-      run: ./configure
-      
-    - name: Install dependencies
-      run: make -j
-      
-    - name: Run check
-      run: make check -j
-      
-    - name: Run distcheck
-      run: make distcheck -j
+    - name: Guix cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/guix
+        # use a key that (almost) never matches
+        key: guix-cache-
+        restore-keys: |
+          guix-cache-
+    - name: Install Guix
+      id: install-guix
+      uses: PromyLOPh/guix-install-action@v1
+
+    - uses: actions/checkout@v3
+    - name: build
+      run: guix build -f guix.scm

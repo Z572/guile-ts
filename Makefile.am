@@ -5,6 +5,7 @@ libguile_ts_la_SOURCES= \
 	ts/api.h \
 	ts/api.c \
 	ts/init.c \
+	ts/init.h \
 	ts/foreign.h\
 	ts/foreign.c \
 	ts/query.c

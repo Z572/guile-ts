@@ -1,6 +1,7 @@
 #include <libguile.h>
 #include <tree_sitter/api.h>
 #include <string.h>
+#include "init.h"
 #include "foreign.h"
 #include "api.h"
 SCM tsp_type;
@@ -134,7 +135,7 @@ static SCM make_node(TSNode tsn) {
   if (ts_node_is_null(tsn)) {
     return SCM_BOOL_F;
 }
-  Node *node=scm_malloc(sizeof(Node));
+  Node *node=gts_malloc(sizeof(Node));
   node->node=tsn;
   return make_foreign_object(tsn_type,node);
 }
@@ -150,7 +151,7 @@ SCM_DEFINE(tsn_tree, "%tsn-tree-freed?", 1, 0, 0, (SCM tsn),
 
 static void node_finalizer(SCM o) {
   Node *node=FR(o);
-  free(node);
+  gts_free(node);
 }
 static void init_ts_node_type(void) {
   tsn_type=make_foreign_object_type("<ts-node>", node_finalizer);
@@ -170,7 +171,7 @@ static void init_ts_tcursor_type(void) {
       arg, func_name, string)
 
 static SCM make_tcursor(TSTreeCursor tstc) {
-  Tcursor *t=scm_malloc(sizeof(Tcursor));
+  Tcursor *t=gts_malloc(sizeof(Tcursor));
   t->cursor=tstc;
   SCM ts=make_foreign_object(tstc_type,t);
   foreign_object_set_freed(ts, false);
@@ -203,7 +204,7 @@ SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
            "") {
   ASSERT_TSP(o);
   TSParser *tsp = FR(o);
-  uint32_t *length=scm_gc_malloc_pointerless(sizeof(uint32_t *), "p");
+  uint32_t *length=gts_malloc(sizeof(uint32_t *));
   TSRange *range=ts_parser_included_ranges(tsp, length);
   SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
   for (unsigned i = 0; i < *length; i++) {
@@ -320,7 +321,7 @@ SCM_DEFINE(tsn_string, "ts-node-string", 1, 0, 0, (SCM o), "") {
   Node *node=FR(o);
   char *string=ts_node_string(node->node);
   SCM s_string=scm_from_utf8_string(string);
-  free(string);
+  gts_free(string);
   return s_string;
 }
 
@@ -587,7 +588,7 @@ SCM_DEFINE(tstc_cursor_delete, "ts-tree-cursor-delete", 1, 0, 0, (SCM cursor),
   Tcursor *tc = FR(cursor);
   foreign_object_set_freed(cursor, true);
   ts_tree_cursor_delete(&tc->cursor);
-  free(tc);
+  gts_free(tc);
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME

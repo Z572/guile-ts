@@ -6,18 +6,18 @@
 static SCM query_type;
 static SCM query_cursor_type;
 
-#define ASSERT_QUERY(o) scm_assert_foreign_object_type(query_type, o)
+#define ASSERT_QUERY(o,arg, func_name, string) scm_assert_foreign_object_type(query_type, o); \
+  SCM_ASSERT_TYPE(                                                             \
+      !(foreign_object_freed_p(o)), o,   \
+      arg, func_name, string)
 #define ASSERT_QC(o, arg, func_name, string) scm_assert_foreign_object_type(query_cursor_type, o); \
   SCM_ASSERT_TYPE(                                                             \
       !(foreign_object_freed_p(o)), o,   \
       arg, func_name, string)
-void query_finalizer(SCM o) {
-  ts_query_delete(foreign_object_ref(o));
-}
 static void init_query(void) {
   SCM name, slots;
   char *cname="<ts-query>";
-  query_type=make_foreign_object_type(cname,query_finalizer);
+  query_type=make_foreign_object_type(cname,NULL);
   scm_c_define(cname,query_type);
 }
 static void init_query_cursor(void) {
@@ -44,12 +44,25 @@ SCM_DEFINE(query_new, "ts-query-new", 2,0, 0,
                               &error_type);
   SCM fo= query ? make_foreign_object(query_type, query) : SCM_BOOL_F;
   if (query) {
-    scm_remember_upto_here_1(query);
+    foreign_object_set_freed(fo, false);
   }
   return query
          ? scm_values_3(fo, SCM_BOOL_F,SCM_BOOL_F)
          : scm_values_3(SCM_BOOL_F, scm_from_uint32(error_offset),
                         scm_from_uint32(error_type));
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(query_delete, "ts-query-delete",1,0, 0,
+           (SCM q),
+           "")
+#define FUNC_NAME s_query_delete
+{
+  ASSERT_QUERY(q,SCM_ARG1,FUNC_NAME,"no deleted <ts-query>");
+  foreign_object_set_freed(q, true);
+  TSQuery *query=foreign_object_ref(q);
+  ts_query_delete(query);
+  return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME
 
@@ -86,7 +99,7 @@ SCM_DEFINE(query_cursor_exec, "ts-query-cursor-exec", 3,0, 0,
 #define FUNC_NAME s_query_cursor_exec
 {
   ASSERT_QC(qc,SCM_ARG1,FUNC_NAME,"no deleted <ts-query-cursor>.");
-  ASSERT_QUERY(q);
+  ASSERT_QUERY(q,SCM_ARG1,FUNC_NAME,"no deleted <ts-query>");;
   scm_remember_upto_here_1(q);
   ASSERT_TSN(node);
   ts_query_cursor_exec(foreign_object_ref(qc),
@@ -101,7 +114,7 @@ SCM_DEFINE(query_is_pattern_rooted, "ts-query-pattern-rooted?", 2,0, 0,
            "")
 #define FUNC_NAME s_query_is_pattern_rooted
 {
-  ASSERT_QUERY(q);
+  ASSERT_QUERY(q,SCM_ARG1,FUNC_NAME,"no deleted <ts-query>");
   scm_remember_upto_here_1(q);
   return scm_from_bool(ts_query_is_pattern_rooted(foreign_object_ref(q),
                                                   scm_to_uint32(index)));

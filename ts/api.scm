@@ -78,7 +78,7 @@
 (define-method (equal? (node1 <ts-node>) (node2 <ts-node>))
   (%ts-node-eq? node1 node2))
 (define-method (write (node <ts-node>) port)
-  (if %tsn-tree-freed?
+  (if (%tsn-tree-freed? node)
       (format port "#<~a (tree is deleted) ~x>"
               (class-name (class-of node))
               (object-address node))

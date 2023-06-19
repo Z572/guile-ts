@@ -71,6 +71,12 @@
          (parser (make <ts-parser> #:language json-language))
          (tree (ts-parser-parse-string parser #f source))
          (root (ts-tree-root-node tree)))
+    (test-assert "write <ts-node>"
+      (string-contains
+       (call-with-output-string
+         (lambda (o)
+           (write root o)))
+       "\"document\" in"))
     (test-equal "root-node's parent"
       #f
       (ts-node-parent
@@ -141,7 +147,12 @@
       (ts-node-child root 0 #t)
       (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 1 #t))
 
-    (ts-tree-delete tree))
+    (ts-tree-delete tree)
+    (test-assert "write <ts-node>: tree is deleted"
+      (string-contains (call-with-output-string
+                         (lambda (o)
+                           (write root o)))
+                       "(tree is deleted)")))
   (let* ((source "[1")
          (parser (make <ts-parser>
                    #:language json-language))

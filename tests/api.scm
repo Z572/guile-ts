@@ -55,9 +55,7 @@
   (let* ((parser (make <ts-parser> #:language json-language))
          (tree (ts-parser-parse-string parser #f "[1,null]")))
     (test-assert "parse string"
-      (ts-tree? tree))
-    (when (ts-tree? tree)
-      (ts-tree-delete tree)))
+      (ts-tree? tree)))
 
   (let* ((parser (make <ts-parser> #:language json-language)))
     (test-error "ts-parser-parse-string: out of lenght"
@@ -172,14 +170,7 @@
 
     (test-equal "ts-node-descendant-for-byte-range: named"
       (ts-node-child root 0 #t)
-      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 1 #t))
-
-    (ts-tree-delete tree)
-    (test-assert "write <ts-node>: tree is deleted"
-      (string-contains (call-with-output-string
-                         (lambda (o)
-                           (write root o)))
-                       "(tree is deleted)")))
+      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 1 #t)))
   (let* ((source "[1")
          (parser (make <ts-parser>
                    #:language json-language))
@@ -188,15 +179,4 @@
     (test-assert "ts-node-error"
       (ts-node-has-error? root))
     (test-assert "ts-node-sexp: error string"
-      (ts-node-sexp root))
-    (ts-tree-delete tree))
-  (let* ((parser (make <ts-parser> #:language json-language))
-         (tree (ts-parser-parse-string parser #f "[1,null]")))
-    (ts-tree-delete tree)
-    (test-error "error use deleted tree" #t (ts-tree-root-node tree)))
-  (let* ((parser (make <ts-parser> #:language json-language))
-         (tree (ts-parser-parse-string parser #f "[1,null]"))
-         (root (ts-tree-root-node tree)))
-    (ts-tree-delete tree)
-    (test-error "error when node's tree is deleted"
-                #t (ts-node-has-error? root))))
+      (ts-node-sexp root))))

@@ -4,10 +4,8 @@
 #include <tree_sitter/api.h>
 #define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
 #define ASSERT_TSN(o)                                                   \
-  scm_assert_foreign_object_type(tsn_type, o);                          \
-  SCM_ASSERT_TYPE(                                                      \
-      !(foreign_object_freed_p(node_tree(node_ref((Node*)(foreign_object_ref(o)))))), o,   \
-      0, NULL, "node have no delteed tree")
+  scm_assert_foreign_object_type(tsn_type, o);
+  
 extern SCM tsp_type;
 extern SCM tsl_type;
 extern SCM tst_type;

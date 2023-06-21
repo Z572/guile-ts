@@ -17,7 +17,6 @@ SCM make_foreign_object(SCM type, void *o) {
 SCM make_foreign_object_type(char* cname, scm_t_struct_finalize finalizer) {
   SCM name, slots;
   name = scm_from_utf8_symbol(cname);
-  slots = finalizer ? scm_list_1(scm_from_utf8_symbol("%data"))
-  : scm_list_2(scm_from_utf8_symbol("%data"),scm_from_utf8_symbol("%freed"));
+  slots = scm_list_1(scm_from_utf8_symbol("%data"));
   return scm_make_foreign_object_type(name, slots, finalizer);
 }

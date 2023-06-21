@@ -11,14 +11,16 @@ SCM tsq_type;
 SCM tsqc_type;
 SCM tsn_type;
 SCM tsr_type;
-#define ASSERT_TSP(o) scm_assert_foreign_object_type(tsp_type, o)
-#define ASSERT_TST(o, arg, func_name, string) scm_assert_foreign_object_type(tst_type, o); \
-  SCM_ASSERT_TYPE(                                                             \
-      !(foreign_object_freed_p(o)), o,   \
-      arg, func_name, string)
-#define ASSERT_TSQ(o) scm_assert_foreign_object_type(tsq_type, o)
-#define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o)
-#define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o)
+#define ASSERT_TSP(o) scm_assert_foreign_object_type(tsp_type, o); \
+  scm_remember_upto_here_1(o)
+#define ASSERT_TST(o) scm_assert_foreign_object_type(tst_type, o); \
+    scm_remember_upto_here_1(o)
+#define ASSERT_TSQ(o) scm_assert_foreign_object_type(tsq_type, o);  \
+    scm_remember_upto_here_1(o)
+#define ASSERT_TSQC(o) scm_assert_foreign_object_type(tsqc_type, o);\
+    scm_remember_upto_here_1(o)
+#define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o);\
+    scm_remember_upto_here_1(o)
 #define FR(o) foreign_object_ref(o)
 
 void
@@ -125,8 +127,12 @@ SCM_DEFINE(tsr_set_end_byte, "%tsr-set-end-byte!", 2, 0, 0, (SCM r,SCM o),
   return SCM_UNSPECIFIED;
 }
 
+static void ts_tree_finalizer(SCM scm) {
+  ts_tree_delete(FR(scm));
+}
+
 void init_ts_tree_type(void) {
-  tst_type = make_foreign_object_type("<ts-tree>", NULL);
+  tst_type = make_foreign_object_type("<ts-tree>", ts_tree_finalizer);
   scm_c_define("<ts-tree>",tst_type);
 }
 
@@ -151,12 +157,6 @@ SCM node_tree(TSNode tsn) {
   return make_foreign_object(tst_type, tsn.tree);
 }
 
-SCM_DEFINE(tsn_tree, "%tsn-tree-freed?", 1, 0, 0, (SCM tsn),
-           "") {
-  Node *node=(FR(tsn));
-  return scm_from_bool(foreign_object_freed_p(node_tree(node_ref(node))));
-}
-
 static void node_finalizer(SCM o) {
   Node *node=FR(o);
   gts_free(node);
@@ -169,20 +169,21 @@ typedef struct {
   TSTreeCursor cursor;
 } Tcursor;
 
-static void init_ts_tcursor_type(void) {
-  tstc_type = make_foreign_object_type("<ts-tree-cursor>", NULL);
+static void ts_tcursor_finalizer(SCM cursor) {
+  Tcursor *tc = FR(cursor);
+  ts_tree_cursor_delete(&tc->cursor);
+  gts_free(tc);
 }
-#define ASSERT_TSTC(o, arg, func_name, string)                                 \
-  scm_assert_foreign_object_type(tstc_type, o);                                \
-  SCM_ASSERT_TYPE(                                                             \
-      !(foreign_object_freed_p(cursor)), o,   \
-      arg, func_name, string)
+static void init_ts_tcursor_type(void) {
+  tstc_type = make_foreign_object_type("<ts-tree-cursor>", ts_tcursor_finalizer);
+}
+#define ASSERT_TSTC(o)                                 \
+  scm_assert_foreign_object_type(tstc_type, o)
 
 static SCM make_tcursor(TSTreeCursor tstc) {
   Tcursor *t=gts_malloc(sizeof(Tcursor));
   t->cursor=tstc;
   SCM ts=make_foreign_object(tstc_type,t);
-  foreign_object_set_freed(ts, false);
   return ts;
 }
 
@@ -198,12 +199,14 @@ SCM_DEFINE(tsp_set_language, "%tsp-set-language!", 2, 0, 0, (SCM p, SCM l),
     scm_misc_error("ts-language", "set ~a language failed! ~a",
                    scm_list_2(p, l));
   };
+  scm_remember_upto_here_1(p);
   return SCM_UNSPECIFIED;
 }
 
 SCM_DEFINE(tsp_language, "%tsp-language", 1, 0, 0, (SCM o), "") {
   ASSERT_TSP(o);
   TSParser *tsp = FR(o);
+  scm_remember_upto_here_1(o);
   const TSLanguage *tsl = ts_parser_language(tsp);
   return tsl ? make_foreign_object(tsl_type, tsl) : SCM_BOOL_F;
 }
@@ -214,6 +217,7 @@ SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
   TSParser *tsp = FR(o);
   uint32_t *length=gts_malloc(sizeof(uint32_t *));
   TSRange *range=ts_parser_included_ranges(tsp, length);
+  scm_remember_upto_here_1(o);
   SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
   for (unsigned i = 0; i < *length; i++) {
     TSRange *r=&range[i];
@@ -250,12 +254,14 @@ SCM_DEFINE(tsp_set_timeout, "%tsp-set-timeout!", 2, 0, 0, (SCM p, SCM timeout),
 SCM_DEFINE(tsp_timeout_micros, "%tsp-timeout", 1, 0, 0, (SCM o), "") {
   ASSERT_TSP(o);
   TSParser *tsp = FR(o);
+  scm_remember_upto_here_1(o);
   return scm_from_uint64(ts_parser_timeout_micros(tsp));
 }
 
 SCM_DEFINE(tsp_reset, "ts-parser-reset!", 1, 0, 0, (SCM p), "") {
   ASSERT_TSP(p);
   ts_parser_reset(FR(p));
+  scm_remember_upto_here_1(p);
   return SCM_UNSPECIFIED;
 }
 
@@ -265,7 +271,7 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
 {
   ASSERT_TSP(p);
   if (scm_is_true(tree)) {
-    ASSERT_TST(tree,SCM_ARG2,FUNC_NAME,"no deleted <ts-tree>");
+    ASSERT_TST(tree);
   };
   char* cstring=scm_to_utf8_string(string);
   uint32_t clength=SCM_UNBNDP(length) ? strlen(cstring) : scm_to_uint32(length);
@@ -279,29 +285,19 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
                              cstring,
                              clength);
   SCM s_tst=tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
-  if (tst) foreign_object_set_freed(s_tst, false);
+  scm_remember_upto_here_2(p,tree);
   return s_tst;
 }
 #undef FUNC_NAME
 
 /// Tree
 
-SCM_DEFINE(tst_delete, "ts-tree-delete", 1, 0, 0, (SCM o), "")
-#define FUNC_NAME s_tst_delete
-{
-  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
-  TSTree *tst = FR(o);
-  foreign_object_set_freed(o, true);
-  ts_tree_delete(tst);
-  return SCM_UNSPECIFIED;
-}
-#undef FUNC_NAME
-
 SCM_DEFINE(tst_copy, "ts-tree-copy", 1, 0, 0, (SCM o), "")
 #define FUNC_NAME s_tst_copy
 {
-  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
+  ASSERT_TST(o);
   TSTree *tst = FR(o);
+  scm_remember_upto_here_1(o);
   return make_foreign_object(tst_type, ts_tree_copy(tst));
 }
 #undef FUNC_NAME
@@ -309,18 +305,22 @@ SCM_DEFINE(tst_copy, "ts-tree-copy", 1, 0, 0, (SCM o), "")
 SCM_DEFINE(tst_language, "ts-tree-language", 1, 0, 0, (SCM o), "")
 #define FUNC_NAME s_tst_language
 {
-  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
+  ASSERT_TST(o);
   TSTree *tst = FR(o);
-  return make_foreign_object(tsl_type, ts_tree_language(tst)) ;
+  SCM l=make_foreign_object(tsl_type, ts_tree_language(tst));
+  scm_remember_upto_here_1(o);
+  return l;
 }
 #undef FUNC_NAME
 
 SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "")
 #define FUNC_NAME s_tst_root_node
 {
-  ASSERT_TST(o,SCM_ARG1,FUNC_NAME,"no deleted <ts-tree>");
+  ASSERT_TST(o);
   TSTree *tst = FR(o);
-  return make_node(ts_tree_root_node(tst));
+  SCM node=make_node(ts_tree_root_node(tst));
+  scm_remember_upto_here_1(o);
+  return node;
 }
 #undef FUNC_NAME
 
@@ -368,7 +368,10 @@ SCM_DEFINE(tsn_has_error_p, "ts-node-has-error?", 1, 0, 0,
            (SCM o), "Check if a syntax node has been edited.") {
   ASSERT_TSN(o);
   Node *node=FR(o);
-  return scm_from_bool(ts_node_has_error(node_ref(node)));
+  SCM tree=node_tree(node->node);
+  SCM has_error_p=scm_from_bool(ts_node_has_error(node_ref(node)));
+  scm_remember_upto_here_2(node,tree);
+  return has_error_p;
 }
 
 SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
@@ -589,26 +592,15 @@ SCM_DEFINE(tstc_cursor_new, "ts-tree-cursor-new", 1, 0, 0,
   return make_tcursor(ts_tree_cursor_new(node_ref(node)));
 }
 
-SCM_DEFINE(tstc_cursor_delete, "ts-tree-cursor-delete", 1, 0, 0, (SCM cursor),
-           "")
-#define FUNC_NAME s_tstc_cursor_delete
-{
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "no deleted <ts-tree-cursor>");
-  Tcursor *tc = FR(cursor);
-  foreign_object_set_freed(cursor, true);
-  ts_tree_cursor_delete(&tc->cursor);
-  gts_free(tc);
-  return SCM_UNSPECIFIED;
-}
-#undef FUNC_NAME
-
 SCM_DEFINE(tstc_cursor_copy, "ts-tree-cursor-copy", 1, 0, 0, (SCM cursor),
            "")
 #define FUNC_NAME s_tstc_cursor_copy
 {
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "no deleted <ts-tree-cursor>");
+  ASSERT_TSTC(cursor);
   Tcursor *tc = FR(cursor);
-  return make_tcursor(ts_tree_cursor_copy(&tc->cursor));
+  SCM new=make_tcursor(ts_tree_cursor_copy(&tc->cursor));
+  scm_remember_upto_here_1(cursor);
+  return new;
 }
 #undef FUNC_NAME
 
@@ -617,12 +609,13 @@ SCM_DEFINE(tstc_cursor_reset, "ts-tree-cursor-reset!", 2, 0, 0,
            "")
 #define FUNC_NAME s_tstc_cursor_reset
 {
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  ASSERT_TSTC(cursor);
   ASSERT_TSN(node);
   Tcursor *tc = FR(cursor);
   Node *c_node=FR(node);
   TSNode t_node=node_ref(c_node);
   ts_tree_cursor_reset(&tc->cursor, t_node);
+  scm_remember_upto_here_2(cursor,node);
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME
@@ -632,9 +625,11 @@ SCM_DEFINE(tstc_current_node, "ts-tree-cursor-current-node", 1, 0, 0,
            "")
 #define FUNC_NAME s_tstc_current_node
 {
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  ASSERT_TSTC(cursor);
   Tcursor *tc = FR(cursor);
-  return make_node(ts_tree_cursor_current_node(&tc->cursor));
+  SCM node=make_node(ts_tree_cursor_current_node(&tc->cursor));
+  scm_remember_upto_here_1(cursor);
+  return node;
 }
 #undef FUNC_NAME
 
@@ -643,9 +638,10 @@ SCM_DEFINE(tstc_current_field_name, "ts-tree-cursor-current-field-name", 1, 0, 0
            "")
 #define FUNC_NAME s_tstc_current_node
 {
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  ASSERT_TSTC(cursor);
   Tcursor *tc = FR(cursor);
   const char *string=ts_tree_cursor_current_field_name(&tc->cursor);;
+  scm_remember_upto_here_1(cursor);
   return string ? scm_from_utf8_string(string) : SCM_BOOL_F ;
 }
 #undef FUNC_NAME
@@ -655,19 +651,24 @@ SCM_DEFINE(tstc_goto_parent, "ts-tree-cursor-goto-parent", 1, 0, 0,
            "")
 #define FUNC_NAME s_tstc_goto_parent
 {
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  ASSERT_TSTC(cursor);
   Tcursor *tc = FR(cursor);
-  return scm_from_bool(ts_tree_cursor_goto_parent(&tc->cursor));
+  SCM g_p=scm_from_bool(ts_tree_cursor_goto_parent(&tc->cursor));
+  scm_remember_upto_here_1(cursor);
+  return g_p;
 }
 #undef FUNC_NAME
+
 SCM_DEFINE(tstc_goto_first_child, "ts-tree-cursor-goto-first-child", 1, 0, 0,
            (SCM cursor),
            "")
 #define FUNC_NAME s_tstc_goto_first_child
 {
-  ASSERT_TSTC(cursor, SCM_ARG1, FUNC_NAME, "freed cursor!");
+  ASSERT_TSTC(cursor);
   Tcursor *tc = FR(cursor);
-  return scm_from_bool(ts_tree_cursor_goto_first_child(&tc->cursor));
+  SCM g_p=scm_from_bool(ts_tree_cursor_goto_first_child(&tc->cursor));
+  scm_remember_upto_here_1(cursor);
+  return g_p;
 }
 #undef FUNC_NAME
 

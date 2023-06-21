@@ -44,12 +44,10 @@
             ts-tree-cursor-copy
             ts-tree-cursor-current-field-name
             ts-tree-cursor-current-node
-            ts-tree-cursor-delete
             ts-tree-cursor-goto-parent
             ts-tree-cursor-goto-first-child
             ts-tree-cursor-new
             ts-tree-cursor-reset!
-            ts-tree-delete
             ts-tree-language
             ts-tree-root-node
             ts-tree?))
@@ -78,16 +76,12 @@
 (define-method (equal? (node1 <ts-node>) (node2 <ts-node>))
   (%ts-node-eq? node1 node2))
 (define-method (write (node <ts-node>) port)
-  (if (%tsn-tree-freed? node)
-      (format port "#<~a (tree is deleted) ~x>"
-              (class-name (class-of node))
-              (object-address node))
-      (format port "#<~a ~s in ~a-~a ~x>"
-              (class-name (class-of node))
-              (ts-node-type node)
-              (ts-node-start-byte node)
-              (ts-node-end-byte node)
-              (object-address node))))
+  (format port "#<~a ~s in ~a-~a ~x>"
+          (class-name (class-of node))
+          (ts-node-type node)
+          (ts-node-start-byte node)
+          (ts-node-end-byte node)
+          (object-address node)))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual
@@ -140,8 +134,7 @@
                  '())
            ,@(if include-ranges
                  `(#:include-ranges ,include-ranges)
-                 '()))
-         ))
+                 '()))))
 
 (define (get-ts-language-from-file lib name)
   (let ((o (foreign-library-function lib name #:return-type '*)))

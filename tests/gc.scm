@@ -25,5 +25,4 @@
             (- (ts-node-child-count root #t) 1)
             #t)
            #t))
-        (ts-node-sexp root)))
-    (ts-tree-delete tree)))
+        (ts-node-sexp root)))))

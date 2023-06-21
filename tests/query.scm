@@ -33,4 +33,34 @@
         (ts-query-pattern-rooted? query 0))
       (ts-query-cursor-delete qc)
       (ts-tree-delete tree)
+      (ts-query-delete query))
+    (let* ((query (ts-query-new
+                   ts-json
+                   "(document (array (number) @num (number) @num2))")))
+      (test-equal "ts-query-pattern-count"
+        1 (ts-query-pattern-count query))
+      (test-equal "ts-query-capture-count"
+        2 (ts-query-capture-count query))
+      (test-equal "ts-query-string-count"
+        0 (ts-query-string-count query))
+      (ts-query-delete query))
+
+
+
+    (let* ((query (ts-query-new
+                   ts-json
+                   "(#a)")))
+
+      (test-equal "ts-query-string-count: 1"
+        ;; #a
+        1(ts-query-string-count query))
+      (ts-query-delete query))
+
+    (let* ((query (ts-query-new
+                   ts-json
+                   "(#a \"h\")")))
+
+      (test-equal "ts-query-string-count: 2"
+        ;; #a "h"
+        2 (ts-query-string-count query))
       (ts-query-delete query))))

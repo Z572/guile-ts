@@ -66,6 +66,39 @@ SCM_DEFINE(query_delete, "ts-query-delete",1,0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(query_pattern_count, "ts-query-pattern-count",1,0, 0,
+           (SCM q),
+           "")
+#define FUNC_NAME s_query_pattern_count
+{
+  ASSERT_QUERY(q,SCM_ARG1,FUNC_NAME,"no deleted <ts-query>");
+  TSQuery *query=foreign_object_ref(q);
+  return scm_from_uint32(ts_query_pattern_count(query));
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(query_capture_count, "ts-query-capture-count",1,0, 0,
+           (SCM q),
+           "")
+#define FUNC_NAME s_query_capture_count
+{
+  ASSERT_QUERY(q,SCM_ARG1,FUNC_NAME,"no deleted <ts-query>");
+  TSQuery *query=foreign_object_ref(q);
+  return scm_from_uint32(ts_query_capture_count(query));
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(query_string_count, "ts-query-string-count",1,0, 0,
+           (SCM q),
+           "")
+#define FUNC_NAME s_query_string_count
+{
+  ASSERT_QUERY(q,SCM_ARG1,FUNC_NAME,"no deleted <ts-query>");
+  TSQuery *query=foreign_object_ref(q);
+  return scm_from_uint32(ts_query_string_count(query));
+}
+#undef FUNC_NAME
+
 SCM_DEFINE(query_cursor_new, "ts-query-cursor-new", 0,0, 0,
            (),
            "")

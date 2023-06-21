@@ -15,6 +15,7 @@ extern SCM tsq_type;
 extern SCM tsqc_type;
 extern SCM tsn_type;
 extern SCM tsr_type;
+void value_range_error (const char* subr,SCM bad_val, SCM min, SCM max) SCM_NORETURN;
 typedef struct Node Node;
 TSNode node_ref(Node *node);
 SCM node_tree(TSNode tsn);

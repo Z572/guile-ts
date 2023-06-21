@@ -21,8 +21,7 @@ SCM tsr_type;
 #define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o)
 #define FR(o) foreign_object_ref(o)
 
-static void value_range_error (const char* subr,SCM bad_val, SCM min, SCM max) SCM_NORETURN;
-static void
+void
 value_range_error (const char* subr, SCM bad_val, SCM min, SCM max)
 {
   scm_error (scm_out_of_range_key,

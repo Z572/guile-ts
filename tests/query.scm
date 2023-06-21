@@ -63,4 +63,20 @@
       (test-equal "ts-query-string-count: 2"
         ;; #a "h"
         2 (ts-query-string-count query))
+      (ts-query-delete query))
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "(document (array (number) @b . (number) @bc))"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "[1,2,3]"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-exec qc query root-node)
+      (test-equal "ts-query-capture-name-for-id: 1"
+        "b" (ts-query-capture-name-for-id query 0))
+      (test-equal "ts-query-capture-name-for-id: 2"
+        "bc" (ts-query-capture-name-for-id query 1))
+      (test-error "ts-query-capture-name-for-id: out of range"
+                  'out-of-range
+                  (ts-query-capture-name-for-id query 2))
+      (ts-query-cursor-delete qc)
+      (ts-tree-delete tree)
       (ts-query-delete query))))

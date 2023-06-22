@@ -66,4 +66,15 @@
         "bc" (ts-query-capture-name-for-id query 1))
       (test-error "ts-query-capture-name-for-id: out of range"
                   'out-of-range
-                  (ts-query-capture-name-for-id query 2)))))
+                  (ts-query-capture-name-for-id query 2)))
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "((document (array (number) @b . (number) @bc))
+(#match @b \"^a\"))"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "[1,2,3]"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-exec qc query root-node)
+      (test-equal "ts-query-string-value-for-id: 1"
+        "match" (ts-query-string-value-for-id query 0))
+      (test-equal "ts-query-string-value-for-id: 2"
+        "^a" (ts-query-string-value-for-id query 1)))))

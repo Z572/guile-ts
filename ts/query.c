@@ -98,6 +98,27 @@ SCM_DEFINE(query_capture_name_for_id, "ts-query-capture-name-for-id", 2, 0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(query_string_value_for_id, "ts-query-string-value-for-id", 2, 0, 0,
+           (SCM q, SCM id), "")
+#define FUNC_NAME s_query_string_value_for_id
+{
+  ASSERT_QUERY(q);
+  TSQuery *query = foreign_object_ref(q);
+  scm_remember_upto_here_1(q);
+  uint32_t c_id = scm_to_uint32(id);
+  {
+    uint32_t count = ts_query_string_count(query);
+    if (c_id >= count) {
+      value_range_error(FUNC_NAME, id, scm_from_uint32(0),
+                        scm_from_uint32(count));
+    }
+  }
+  uint32_t length;
+  const char *string = ts_query_string_value_for_id(query, c_id, &length);
+  return scm_from_utf8_stringn(string, length);
+}
+#undef FUNC_NAME
+
 SCM_DEFINE(query_string_count, "ts-query-string-count",1,0, 0,
            (SCM q),
            "")

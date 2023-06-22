@@ -144,7 +144,7 @@ TSNode node_ref(Node *node) {
   return node->node;
 }
 
-static SCM make_node(TSNode tsn) {
+SCM make_node(TSNode tsn) {
   if (ts_node_is_null(tsn)) {
     return SCM_BOOL_F;
 }

@@ -107,4 +107,42 @@
         (string-length pattern0) (ts-query-start-byte-for-pattern query 1))
       (test-error "ts-query-start-byte-for-pattern: out of range"
                   'out-of-range
-                  (ts-query-start-byte-for-pattern query 2)))))
+                  (ts-query-start-byte-for-pattern query 2)))
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "(document (array) @array)"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "[1,2,3]"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-exec qc query root-node)
+      (test-assert "ts-query-cursor-next-match: 1"
+        (ts-query-cursor-next-match qc))
+      (test-assert "ts-query-cursor-next-match: end"
+        (not (ts-query-cursor-next-match qc))))
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "(document (array (number) @number))"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "{}"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-exec qc query root-node)
+      (test-assert "ts-query-cursor-next-match: no match"
+        (not (ts-query-cursor-next-match qc))))
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "(document (array (number) @number))
+(document (array ) @array)"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "[1,2,3]"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-exec qc query root-node)
+      (let ((match_ (ts-query-cursor-next-match qc))
+            (match_2 (ts-query-cursor-next-match qc)))
+        (test-equal "ts-query-match-id: 1"
+          0 (ts-query-match-id match_))
+        (test-equal "ts-query-match-id: 2"
+          1 (ts-query-match-id match_2))
+        (test-equal "ts-query-match-pattern-index: 1"
+          1 (ts-query-match-pattern-index match_))
+        (test-equal "ts-query-match-pattern-index: 2"
+          0 (ts-query-match-pattern-index match_2))
+        (test-assert "ts-query-match-captures"
+          (not (equal? (ts-query-match-captures match_)
+                       (ts-query-match-captures match_2))))))))

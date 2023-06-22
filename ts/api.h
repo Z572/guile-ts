@@ -17,4 +17,5 @@ void value_range_error (const char* subr,SCM bad_val, SCM min, SCM max) SCM_NORE
 typedef struct Node Node;
 TSNode node_ref(Node *node);
 SCM node_tree(TSNode tsn);
+SCM make_node(TSNode tsn);
 #endif

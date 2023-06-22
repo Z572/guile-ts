@@ -8,7 +8,8 @@
             ts-query-capture-count
             ts-query-string-count
             ts-query-capture-name-for-id
-            ts-query-string-value-for-id))
+            ts-query-string-value-for-id
+            ts-query-capture-quantifier-for-id))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_query"))

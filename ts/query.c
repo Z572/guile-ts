@@ -119,6 +119,35 @@ SCM_DEFINE(query_string_value_for_id, "ts-query-string-value-for-id", 2, 0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(query_capture_quantifier_for_id, "ts-query-capture-quantifier-for-id", 3, 0, 0,
+           (SCM q, SCM p_id,SCM id), "")
+#define FUNC_NAME s_query_capture_quantifier_for_id
+{
+  ASSERT_QUERY(q);
+  TSQuery *query = foreign_object_ref(q);
+  scm_remember_upto_here_1(q);
+  uint32_t pat_id = scm_to_uint32(p_id);
+  {
+    uint32_t count = ts_query_pattern_count(query);
+    if (pat_id >= count) {
+      value_range_error(FUNC_NAME, id, scm_from_uint32(0),
+                        scm_from_uint32(count));
+    }
+  }
+
+  uint32_t c_id = scm_to_uint32(id);
+  {
+    uint32_t count = ts_query_capture_count(query);
+    if (c_id >= count) {
+      value_range_error(FUNC_NAME, id, scm_from_uint32(0),
+                        scm_from_uint32(count));
+    }
+  }
+  TSQuantifier quantifier = ts_query_capture_quantifier_for_id(query, pat_id,c_id);
+  return scm_from_uint32(quantifier);
+}
+#undef FUNC_NAME
+
 SCM_DEFINE(query_string_count, "ts-query-string-count",1,0, 0,
            (SCM q),
            "")
@@ -183,6 +212,12 @@ static void init_enum() {
   DEFINE_ENUM(TSQueryErrorCapture);
   DEFINE_ENUM(TSQueryErrorStructure);
   DEFINE_ENUM(TSQueryErrorLanguage);
+
+  DEFINE_ENUM(TSQuantifierZero);
+  DEFINE_ENUM(TSQuantifierZeroOrOne);
+  DEFINE_ENUM(TSQuantifierZeroOrMore);
+  DEFINE_ENUM(TSQuantifierOne);
+  DEFINE_ENUM(TSQuantifierOneOrMore);
 #undef DEFINE_ENUM
 }
 

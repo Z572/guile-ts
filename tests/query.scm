@@ -77,4 +77,24 @@
       (test-equal "ts-query-string-value-for-id: 1"
         "match" (ts-query-string-value-for-id query 0))
       (test-equal "ts-query-string-value-for-id: 2"
-        "^a" (ts-query-string-value-for-id query 1)))))
+        "^a" (ts-query-string-value-for-id query 1)))
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "(document (array (number)+ @bc))
+(document (array (number)* @bc))
+(#match @bc \"^a\")"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "[1,2,3]"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-exec qc query root-node)
+      (test-equal "ts-query-capture-quantifier-for-id: 1"
+        TSQuantifierOneOrMore
+        (ts-query-capture-quantifier-for-id query 0 0))
+      (test-equal "ts-query-capture-quantifier-for-id: 2"
+        TSQuantifierZeroOrMore
+        (ts-query-capture-quantifier-for-id query 1 0))
+      (test-equal "ts-query-capture-quantifier-for-id: 3"
+        0 (ts-query-capture-quantifier-for-id query 2 0))
+      (test-error "ts-query-capture-quantifier-for-id: out of range 1"
+                  'out-of-range (ts-query-capture-quantifier-for-id query 20 0))
+      (test-error "ts-query-capture-quantifier-for-id: out of range 2"
+                  'out-of-range (ts-query-capture-quantifier-for-id query 2 1)))))

@@ -97,4 +97,14 @@
       (test-error "ts-query-capture-quantifier-for-id: out of range 1"
                   'out-of-range (ts-query-capture-quantifier-for-id query 20 0))
       (test-error "ts-query-capture-quantifier-for-id: out of range 2"
-                  'out-of-range (ts-query-capture-quantifier-for-id query 2 1)))))
+                  'out-of-range (ts-query-capture-quantifier-for-id query 2 1)))
+    (let* ((pattern0 "(document (array (number) @b . (number) @bc))")
+           (pattern1 "(document)")
+           (query (ts-query-new ts-json (string-append pattern0 pattern1))))
+      (test-equal "ts-query-start-byte-for-pattern: 1"
+        0 (ts-query-start-byte-for-pattern query 0))
+      (test-equal "ts-query-start-byte-for-pattern: 1"
+        (string-length pattern0) (ts-query-start-byte-for-pattern query 1))
+      (test-error "ts-query-start-byte-for-pattern: out of range"
+                  'out-of-range
+                  (ts-query-start-byte-for-pattern query 2)))))

@@ -160,6 +160,27 @@ SCM_DEFINE(query_string_count, "ts-query-string-count",1,0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(query_start_byte_for_pattern, "ts-query-start-byte-for-pattern",2,0, 0,
+           (SCM q,SCM n),
+           "")
+#define FUNC_NAME s_query_start_byte_for_pattern
+{
+  ASSERT_QUERY(q);
+  TSQuery *query=foreign_object_ref(q);
+  scm_remember_upto_here_1(q);
+  uint32_t pat_id = scm_to_uint32(n);
+  {
+    uint32_t count = ts_query_pattern_count(query);
+    if (pat_id >= count) {
+      value_range_error(FUNC_NAME, n, scm_from_uint32(0),
+                        scm_from_uint32(count));
+    }
+  }
+  return scm_from_uint32(ts_query_start_byte_for_pattern(query,pat_id));
+}
+
+#undef FUNC_NAME
+
 SCM_DEFINE(query_cursor_new, "ts-query-cursor-new", 0,0, 0,
            (),
            "")

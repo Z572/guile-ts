@@ -145,4 +145,19 @@
           0 (ts-query-match-pattern-index match_2))
         (test-assert "ts-query-match-captures"
           (not (equal? (ts-query-match-captures match_)
-                       (ts-query-match-captures match_2))))))))
+                       (ts-query-match-captures match_2))))))
+
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "(document (array (number) @number))"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "[1,2]"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-exec qc query root-node)
+      (test-equal "ts-query-cursor-next-capture: 1"
+        (ts-node-next-sibling
+         (caar (ts-query-match-captures
+                (ts-query-cursor-next-capture qc))) #t)
+        (caar (ts-query-match-captures
+               (ts-query-cursor-next-capture qc))))
+      (test-assert "ts-query-cursor-next-capture: end"
+        (not (ts-query-cursor-next-capture qc))))))

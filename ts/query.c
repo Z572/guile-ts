@@ -263,6 +263,34 @@ SCM_DEFINE(query_cursor_remove_match, "ts-query-cursor-remove-match",2 ,0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(query_cursor_next_capture, "ts-query-cursor-next-capture",1,0, 0,
+           (SCM cursor),
+           "")
+#define FUNC_NAME s_query_cursor_next_capture
+{
+  ASSERT_QC(cursor);
+  TSQueryCursor *qc=foreign_object_ref(cursor);
+  scm_remember_upto_here_1(cursor);
+  TSQueryMatch tsq_match;
+  uint32_t capture_index;
+  bool success=ts_query_cursor_next_capture(qc, &tsq_match,&capture_index);
+  if (success) {
+    SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
+    SCM match=scm_make(scm_list_1(scm_c_private_ref("ts query","<ts-query-match>")));
+
+    scm_slot_set_x(match, scm_from_utf8_symbol("id"), scm_from_uint32(tsq_match.id));
+    scm_slot_set_x(match, scm_from_utf8_symbol("pattern-index"), scm_from_uint32(tsq_match.pattern_index));
+    for (unsigned i = 0; i < tsq_match.capture_count; i++) {
+      SCM node = make_node(tsq_match.captures[i].node);
+      list = scm_cons(scm_cons(node,scm_from_uint32(tsq_match.captures[i].index)), list);
+    }
+    scm_slot_set_x(match, scm_from_utf8_symbol("captures"), list);
+    return scm_values_2(match,scm_from_uint32(capture_index));
+  }
+  return scm_values_2( SCM_BOOL_F, SCM_BOOL_F);
+}
+#undef FUNC_NAME
+
 static void init_enum() {
 #define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n,NULL)
   DEFINE_ENUM(TSQueryErrorNone);

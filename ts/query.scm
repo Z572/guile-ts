@@ -14,6 +14,7 @@
             ts-query-start-byte-for-pattern
             ts-query-cursor-next-match
             ts-query-cursor-remove-match
+            ts-query-cursor-next-capture
             ts-query-match-id
             ts-query-match-pattern-index
             ts-query-match-captures))

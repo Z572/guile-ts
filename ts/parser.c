@@ -3,7 +3,7 @@
 #include <string.h>
 #include "init.h"
 #include "foreign.h"
-#include "api.h"
+#include "util.h"
 
 static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
 

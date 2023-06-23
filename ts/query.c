@@ -2,7 +2,7 @@
 #include <tree_sitter/api.h>
 #include <string.h>
 #include "foreign.h"
-#include "api.h"
+#include "util.h"
 static SCM query_type;
 static SCM query_cursor_type;
 

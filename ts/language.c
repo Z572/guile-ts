@@ -3,7 +3,7 @@
 #include <string.h>
 #include "init.h"
 #include "foreign.h"
-#include "api.h"
+#include "util.h"
 
 SCM_DEFINE(ref_or_set, "%rf", 2, 0, 0, (SCM type,SCM point),
            "") {

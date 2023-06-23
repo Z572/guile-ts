@@ -4,7 +4,7 @@
   (begin
     (define %public-modules
       '((ts init)
-        (ts api)
+        (ts util)
         (ts parser)
         (ts tree)
         (ts language)

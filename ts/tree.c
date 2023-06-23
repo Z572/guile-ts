@@ -3,7 +3,7 @@
 #include <string.h>
 #include "init.h"
 #include "foreign.h"
-#include "api.h"
+#include "util.h"
 
 struct Node {
   TSNode node;

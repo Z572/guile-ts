@@ -3,7 +3,7 @@
 #include <string.h>
 #include "init.h"
 #include "foreign.h"
-#include "api.h"
+#include "util.h"
 SCM tsp_type;
 SCM tsl_type;
 SCM tst_type;
@@ -103,11 +103,11 @@ void init_ts_api_enum() {
   DEFINE_ENUM(TSSymbolTypeAuxiliary);
 #undef DEFINE_ENUM
 }
-void init_ts_api() {
+void init_ts_util() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));
   init_ts_api_enum();
   init_ts_range_type();
 #ifndef SCM_MAGIC_SNARFER
-#include "api.x"
+#include "util.x"
 #endif
 }

@@ -1,4 +1,4 @@
-(define-module (ts api)
+(define-module (ts util)
   #:use-module (ts init)
   #:use-module (ts language)
   #:use-module (oop goops)
@@ -9,7 +9,7 @@
   #:export (<ts-range>))
 
 (eval-when (expand load eval)
-  (load-extension "libguile_ts" "init_ts_api"))
+  (load-extension "libguile_ts" "init_ts_util"))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual

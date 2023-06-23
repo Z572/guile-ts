@@ -2,53 +2,18 @@
   #:use-module (ts init)
   #:use-module (ts language)
   #:use-module (oop goops)
-  #:use-module (ice-9 format)
   #:use-module (srfi srfi-26)
   #:use-module (system foreign)
   #:use-module (system foreign-library)
   #:use-module (system foreign-object)
   #:export (<ts-parser>
             <ts-range>
-            ts-node-child
-            ts-node-child-by-field-name
-            ts-node-child-count
-            ts-node-childs
-            ts-node-descendant-for-byte-range
-            ts-node-end-byte
-            ts-node-end-point
-            ts-node-extra?
-            ts-node-field-name-for-child
-            ts-node-first-child-for-byte
-            ts-node-has-changes?
-            ts-node-has-error?
-            ts-node-missing?
-            ts-node-prev-sibling
-            ts-node-next-sibling
-            ts-node-named?
-            ts-node-null?
-            ts-node-parent
-            ts-node-sexp
-            ts-node-start-byte
-            ts-node-start-point
-            ts-node-type
-            ts-node?
             ts-parser-included-ranges
             ts-parser-language
             ts-parser-new
             ts-parser-parse-string
             ts-parser-reset!
-            ts-parser-timeout
-            ts-tree-copy
-            ts-tree-cursor-copy
-            ts-tree-cursor-current-field-name
-            ts-tree-cursor-current-node
-            ts-tree-cursor-goto-parent
-            ts-tree-cursor-goto-first-child
-            ts-tree-cursor-new
-            ts-tree-cursor-reset!
-            ts-tree-language
-            ts-tree-root-node
-            ts-tree?))
+            ts-parser-timeout))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_api"))
@@ -69,16 +34,6 @@
                    #:slot-set! %tsp-set-included-ranges!
                    #:accessor ts-parser-included-ranges
                    #:init-keyword #:include-ranges))
-
-(define-method (equal? (node1 <ts-node>) (node2 <ts-node>))
-  (%ts-node-eq? node1 node2))
-(define-method (write (node <ts-node>) port)
-  (format port "#<~a ~s in ~a-~a ~x>"
-          (class-name (class-of node))
-          (ts-node-type node)
-          (ts-node-start-byte node)
-          (ts-node-end-byte node)
-          (object-address node)))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual
@@ -101,12 +56,6 @@
             #:slot-set! %tsr-set-end-byte!
             #:accessor ts-range-end-byte
             #:init-keyword #:end-byte))
-
-(define-method (ts-node-sexp (node <ts-node>))
-  (call-with-input-string (ts-node-string node) read))
-
-(define (ts-tree? t)
-  (is-a? t <ts-tree>))
 
 (define-method (initialize (obj <ts-range>) initargs)
   (let ((data (get-keyword #:%data initargs #f)))
@@ -132,14 +81,3 @@
            ,@(if include-ranges
                  `(#:include-ranges ,include-ranges)
                  '()))))
-
-(define (ts-node? o)
-  (is-a? o <ts-node>))
-
-(define-method (ts-node-childs (node <ts-node>))
-  (map (cut ts-node-child node <> #f)
-       (iota (ts-node-child-count node #f))))
-
-(define-method (ts-node-childs (node <ts-node>) named)
-  (map (cut ts-node-child node <> named)
-       (iota (ts-node-child-count node named))))

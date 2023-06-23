@@ -2,14 +2,15 @@ AUTOMAKE_OPTIONS = gnu
 SUFFIXES = .scm .go .c .x
 
 libguile_ts_la_SOURCES= \
-	ts/api.h \
-	ts/api.c \
-	ts/init.c \
-	ts/init.h \
-	ts/language.c \
-	ts/foreign.h\
-	ts/foreign.c \
-	ts/query.c
+	ts/api.h 		\
+	ts/api.c 		\
+	ts/init.c 		\
+	ts/init.h 		\
+	ts/language.c 	\
+	ts/foreign.h	\
+	ts/foreign.c	\
+	ts/query.c		\
+	ts/tree.c
 libguile_ts_la_CFLAGS=$(TREE_SITTER_CFLAGS) $(GUILE_CFLAGS)
 libguile_ts_la_LIBADD=$(TREE_SITTER_LIBS) $(GUILE_LIBS)
 lib_LTLIBRARIES = libguile_ts.la
@@ -23,7 +24,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(libguile_ts_la_CFLAGS)
 EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm
-SOURCES=ts/init.scm ts/query.scm ts.scm ts/language.scm  ts/api.scm
+SOURCES=ts/init.scm ts/query.scm ts.scm ts/language.scm ts/api.scm ts/tree.scm
 GUILE_WARNINGS =                                          \
   -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
   -Wmacro-use-before-definition                           \

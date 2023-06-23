@@ -228,8 +228,8 @@ SCM_DEFINE(query_cursor_set_byte_range, "ts-query-cursor-set-byte-range!", 3, 0,
 #define FUNC_NAME s_query_cursor_set_byte_range
 {
   ASSERT_QC(qc);
-  scm_remember_upto_here_1(qc);
   TSQueryCursor *cursor = foreign_object_ref(qc);
+  scm_remember_upto_here_1(qc);
   ts_query_cursor_set_byte_range(cursor, scm_to_uint32(begin),
                                  scm_to_uint32(end));
   return SCM_UNSPECIFIED;

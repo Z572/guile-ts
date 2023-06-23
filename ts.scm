@@ -5,6 +5,7 @@
     (define %public-modules
       '((ts init)
         (ts api)
+        (ts parser)
         (ts tree)
         (ts language)
         (ts query)))

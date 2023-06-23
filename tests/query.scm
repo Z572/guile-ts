@@ -1,7 +1,5 @@
 (define-module (tests query)
-  #:use-module (ts api)
-  #:use-module (ts language)
-  #:use-module (ts query)
+  #:use-module (ts)
   #:use-module (oop goops)
   #:use-module (srfi srfi-64)
   #:use-module (srfi srfi-71))

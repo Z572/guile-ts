@@ -1,6 +1,5 @@
 (define-module (tests gc)
-  #:use-module (ts api)
-  #:use-module (ts language)
+  #:use-module (ts)
   #:use-module (oop goops)
   #:use-module (srfi srfi-64))
 

@@ -1,6 +1,7 @@
 (define-module (tests api)
   #:use-module (ts)
   #:use-module (oop goops)
+  #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-64))
 
 (test-group "ts-parser"
@@ -215,4 +216,16 @@
     (test-assert "ts-node-error"
       (ts-node-has-error? root))
     (test-assert "ts-node-sexp: error string"
-      (ts-node-sexp root))))
+      (ts-node-sexp root)))
+
+  (let* ((source "[11]")
+         (parser (make <ts-parser> #:language json-language)))
+    (test-assert "ts-parser-print-dot-graphs"
+      (let ((port #f))
+        (dynamic-wind
+          (lambda () (set! port (mkstemp "test-ts-parser-print-dot-graphs-XXXXXX")))
+          (lambda ()
+            (ts-parser-print-dot-graphs parser port)
+            (ts-parser-parse-string parser #f source)
+            (call-with-input-file (port-filename port) get-string-all))
+          (lambda () (delete-file (port-filename port))))))))

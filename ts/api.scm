@@ -14,7 +14,8 @@
             ts-parser-parse-string
             ts-parser-reset!
             ts-parser-timeout
-            ts-parser-logger))
+            ts-parser-logger
+            ts-parser-print-dot-graphs))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_api"))
@@ -86,3 +87,9 @@
            ,@(if include-ranges
                  `(#:include-ranges ,include-ranges)
                  '()))))
+
+(define (ts-parser-print-dot-graphs parser fd-or-port)
+  (let ((fd (if (port? fd-or-port)
+                (port->fdes fd-or-port)
+                fd-or-port)))
+    (%ts-parser-print-dot-graphs parser fd)))

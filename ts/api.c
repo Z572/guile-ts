@@ -73,6 +73,19 @@ SCM_DEFINE(tsp_logger, "%tsp-logger", 1, 0, 0, (SCM p),
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tsp_print_dot_graphs, "%ts-parser-print-dot-graphs", 2, 0, 0, (SCM p,SCM fd),
+                  "")
+#define FUNC_NAME s_tsp_print_dot_graphs
+{
+  ASSERT_TSP(p);
+  TSParser *parser=FR(p);
+  ts_parser_print_dot_graphs(parser,scm_to_int(fd));
+  scm_remember_upto_here_2(p,fd);
+  return SCM_UNSPECIFIED;
+}
+#undef FUNC_NAME
+
+
 void init_ts_range_type(void) {
   tsr_type = make_foreign_object_type("<%ts-range>",NULL);
   scm_c_define("<%ts-range>", tsr_type);

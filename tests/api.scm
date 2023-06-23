@@ -81,6 +81,26 @@
     (test-equal "ts-tree-root-node: offset, byte only"
       200 (ts-node-start-byte
            (ts-tree-root-node tree 200))))
+  (let* ((source "[11]")
+         (parser (make <ts-parser> #:language json-language))
+         (_ (test-equal "ts-parser-logger: unset"
+              #f (ts-parser-logger parser)))
+         (logs '())
+         (log-proc (lambda (lv str)
+                     (set! logs (cons (cons lv str) logs))))
+         (_ (set! (ts-parser-logger parser) log-proc))
+         (tree (ts-parser-parse-string parser #f source)))
+
+    (test-equal "ts-parser-logger: get"
+      log-proc (ts-parser-logger parser))
+
+    (test-assert "ts-parser-logger: success"
+      (not (null? logs)))
+
+    (test-equal "ts-parser-logger: set to #f"
+      #f
+      (begin (set! (ts-parser-logger parser) #f)
+             (ts-parser-logger parser))))
   (let* ((source "[1,null]")
          (parser (make <ts-parser> #:language json-language))
          (tree (ts-parser-parse-string parser #f source))

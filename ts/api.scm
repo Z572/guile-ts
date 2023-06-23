@@ -13,7 +13,8 @@
             ts-parser-new
             ts-parser-parse-string
             ts-parser-reset!
-            ts-parser-timeout))
+            ts-parser-timeout
+            ts-parser-logger))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_api"))
@@ -33,7 +34,11 @@
                    #:slot-ref %tsp-included-ranges
                    #:slot-set! %tsp-set-included-ranges!
                    #:accessor ts-parser-included-ranges
-                   #:init-keyword #:include-ranges))
+                   #:init-keyword #:include-ranges)
+  (logger #:allocation #:virtual
+          #:slot-ref %tsp-logger
+          #:slot-set! %tsp-set-logger!
+          #:accessor ts-parser-logger))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual

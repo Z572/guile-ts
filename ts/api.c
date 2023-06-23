@@ -42,6 +42,37 @@ void init_ts_parser_type(void) {
   tsp_type = make_foreign_object_type("<%ts-parser>", ts_parser_finalizer);
 }
 
+inline static void log_call(void *payload, TSLogType logtype, const char *string) {
+  SCM proc=payload;
+  scm_call_2(proc, scm_from_uint32(logtype), scm_from_utf8_string(string));
+  scm_remember_upto_here_1(proc);
+}
+
+SCM_DEFINE(tsp_set_logger, "%tsp-set-logger!", 2, 0, 0, (SCM p, SCM proc), "")
+#define FUNC_NAME s_tsp_set_logger
+{
+  ASSERT_TSP(p);
+  SCM_ASSERT_TYPE((scm_to_bool(scm_procedure_p(proc)) || (scm_is_false(proc))),
+                  proc, SCM_ARG2, FUNC_NAME, "procedure or #f");
+  TSLogger logger = {.payload = proc, .log = log_call};
+  scm_remember_upto_here_2(p,proc);
+  ts_parser_set_logger(FR(p), logger);
+  return SCM_UNSPECIFIED;
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(tsp_logger, "%tsp-logger", 1, 0, 0, (SCM p),
+                  "")
+#define FUNC_NAME s_tsp_logger
+{
+  ASSERT_TSP(p);
+  TSLogger logger=ts_parser_logger(FR(p));
+  scm_remember_upto_here_1(p);
+
+  return (logger.payload) ? (logger.payload) : SCM_BOOL_F;
+}
+#undef FUNC_NAME
+
 void init_ts_range_type(void) {
   tsr_type = make_foreign_object_type("<%ts-range>",NULL);
   scm_c_define("<%ts-range>", tsr_type);

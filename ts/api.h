@@ -18,6 +18,13 @@ extern SCM tsr_type;
 inline SCM point_to_cons(TSPoint p) {
   return scm_cons(scm_from_uint32(p.row),scm_from_uint32(p.column));
 }
+inline TSPoint cons_to_point(SCM cons) {
+  TSPoint point = {
+    .row= scm_to_uint32(scm_car(cons)),
+    .column= scm_to_uint32(scm_cdr(cons))
+  };
+  return point;
+}
 void value_range_error (const char* subr,SCM bad_val, SCM min, SCM max) SCM_NORETURN;
 typedef struct Node Node;
 TSNode node_ref(Node *node);

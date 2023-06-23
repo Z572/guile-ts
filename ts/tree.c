@@ -86,7 +86,7 @@ SCM_DEFINE(tst_language, "ts-tree-language", 1, 0, 0, (SCM o), "")
 }
 #undef FUNC_NAME
 
-SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "")
+SCM_DEFINE(tst_root_node, "%ts-tree-root-node", 1, 0, 0, (SCM o), "")
 #define FUNC_NAME s_tst_root_node
 {
   ASSERT_TST(o);
@@ -94,6 +94,19 @@ SCM_DEFINE(tst_root_node, "ts-tree-root-node", 1, 0, 0, (SCM o), "")
   SCM node=make_node(ts_tree_root_node(tst));
   scm_remember_upto_here_1(o);
   return node;
+}
+#undef FUNC_NAME
+
+SCM_DEFINE(tst_root_node_with_offset, "%ts-tree-root-node-with-offset", 3, 0, 0,
+           (SCM o, SCM offset,SCM point), "")
+#define FUNC_NAME s_tst_root_node_with_offset
+{
+  ASSERT_TST(o);
+  TSTree *tst = FR(o);
+  SCM node;
+  scm_remember_upto_here_1(o);
+  return make_node(ts_tree_root_node_with_offset(tst, scm_to_uint32(offset),
+                                                 cons_to_point(point)));
 }
 #undef FUNC_NAME
 

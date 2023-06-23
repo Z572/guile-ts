@@ -65,6 +65,22 @@
                 'wrong-type-arg
                 (ts-parser-parse-string parser #f "[1,null]" #())))
 
+  (let* ((source "[11]")
+         (parser (make <ts-parser> #:language json-language))
+         (tree (ts-parser-parse-string parser #f source)))
+    (test-equal "ts-tree-root-node: offset, byte"
+      200 (ts-node-start-byte
+           (ts-tree-root-node tree 200 (cons 0 200))))
+    (test-equal "ts-tree-root-node: offset, point"
+      (cons 0 200) (ts-node-start-point
+                    (ts-tree-root-node tree 200 (cons 0 200))))
+
+    (test-equal "ts-tree-root-node: offset, point only"
+      (cons 0 200) (ts-node-start-point
+                    (ts-tree-root-node tree (cons 0 200))))
+    (test-equal "ts-tree-root-node: offset, byte only"
+      200 (ts-node-start-byte
+           (ts-tree-root-node tree 200))))
   (let* ((source "[1,null]")
          (parser (make <ts-parser> #:language json-language))
          (tree (ts-parser-parse-string parser #f source))

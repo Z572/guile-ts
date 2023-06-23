@@ -39,6 +39,7 @@
             ts-tree-cursor-reset!
             ts-tree-language
             ts-tree-root-node
+            ts-tree-root-node-with-offset
             ts-tree?))
 
 (eval-when (expand load eval)
@@ -55,6 +56,16 @@
           (ts-node-end-byte node)
           (object-address node)))
 
+(define* (ts-tree-root-node tree #:optional offset-bytes (offset-point #f))
+  (if (or offset-bytes offset-point)
+      (apply %ts-tree-root-node-with-offset tree
+             (if offset-point
+                 (list offset-bytes offset-point)
+
+                 (if (pair? offset-bytes)
+                     (list 0 offset-bytes)
+                     (list offset-bytes (cons 0 0)))))
+      (%ts-tree-root-node tree)))
 (define-method (ts-node-sexp (node <ts-node>))
   (call-with-input-string (ts-node-string node) read))
 

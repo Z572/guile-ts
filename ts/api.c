@@ -36,15 +36,6 @@ static inline SCM make_range(TSRange *range) {
   return make_foreign_object(scm_c_private_ref("ts api", "<ts-range>"), range);
 }
 
-static inline TSPoint cons_to_point(SCM cons) {
-  TSPoint point = {
-    .row= scm_to_uint32(scm_car(cons)),
-    .column= scm_to_uint32(scm_cdr(cons))
-  };
-  return point;
-}
-
-
 static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
 
 void init_ts_parser_type(void) {

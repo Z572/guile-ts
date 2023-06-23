@@ -5,7 +5,7 @@
 #define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
 #define ASSERT_TSN(o)                                                   \
   scm_assert_foreign_object_type(tsn_type, o);
-  
+#define FR(o) foreign_object_ref(o)
 extern SCM tsp_type;
 extern SCM tsl_type;
 extern SCM tst_type;

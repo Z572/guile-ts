@@ -21,7 +21,6 @@ SCM tsr_type;
     scm_remember_upto_here_1(o)
 #define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o);\
     scm_remember_upto_here_1(o)
-#define FR(o) foreign_object_ref(o)
 
 void
 value_range_error (const char* subr, SCM bad_val, SCM min, SCM max)
@@ -34,11 +33,6 @@ value_range_error (const char* subr, SCM bad_val, SCM min, SCM max)
 }
 
 extern SCM type_table ;
-
-SCM_DEFINE(ref_or_set, "%rf", 2, 0, 0, (SCM type,SCM point),
-           "") {
-  return make_foreign_object(type,scm_to_pointer(point));
-}
 
 static inline SCM make_range(TSRange *range) {
   return make_foreign_object(scm_c_private_ref("ts api", "<ts-range>"), range);
@@ -59,10 +53,6 @@ static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
 
 void init_ts_parser_type(void) {
   tsp_type = make_foreign_object_type("<%ts-parser>", ts_parser_finalizer);
-}
-
-void init_ts_language_type(void) {
-  tsl_type = make_foreign_object_type("<ts-language>", NULL);
 }
 
 void init_ts_range_type(void) {
@@ -552,39 +542,6 @@ SCM_DEFINE(tsn_eq, "%ts-node-eq?", 2, 0, 0,
   return scm_from_bool(ts_node_eq(node_ref(node), node_ref(node2)));
 }
 
-SCM_DEFINE(tsl_field_count, "ts-language-field-count", 1, 0, 0,
-           (SCM o), "") {
-  ASSERT_TSL(o);
-  return scm_from_uint32(ts_language_field_count(FR(o)));
-}
-
-SCM_DEFINE(tsl_field_name_for_id, "ts-language-field-name-for-id", 2, 0, 0,
-           (SCM o,SCM fieldid), "")
-#define FUNC_NAME s_tsl_field_name_for_id
-{
-  ASSERT_TSL(o);
-  const TSLanguage *tsl=FR(o);
-  uint16_t c_fieldid = scm_to_uint16(fieldid);
-  SCM_ASSERT((c_fieldid <= ts_language_field_count(tsl)),
-             fieldid, SCM_ARG2, FUNC_NAME);
-  SCM_ASSERT((0 < scm_to_uint16(fieldid)),fieldid, SCM_ARG2, FUNC_NAME);
-  const char* string=ts_language_field_name_for_id(tsl,c_fieldid);
-  return string ? scm_from_utf8_string(string) : SCM_BOOL_F;
-}
-#undef FUNC_NAME
-
-SCM_DEFINE(tsl_symbol_type, "ts-language-symbol-type", 2, 0, 0,
-           (SCM o,SCM n), "") {
-  ASSERT_TSL(o);
-  return scm_from_uint32(ts_language_symbol_type(FR(o),scm_to_uint16(n)));
-}
-
-SCM_DEFINE(tsl_version, "ts-language-version", 1, 0, 0,
-           (SCM o), "") {
-  ASSERT_TSL(o);
-  return scm_from_uint32(ts_language_version(FR(o)));
-}
-
 SCM_DEFINE(tstc_cursor_new, "ts-tree-cursor-new", 1, 0, 0,
            (SCM o), "") {
   ASSERT_TSN(o);
@@ -682,13 +639,11 @@ void init_ts_api_enum() {
 void init_ts_api() {
   type_table=scm_make_weak_value_hash_table(scm_from_int(3000));
   init_ts_parser_type();
-  init_ts_language_type();
   init_ts_tree_type();
   init_ts_node_type();
   init_ts_api_enum();
   init_ts_range_type();
   init_ts_tcursor_type();
-  scm_c_define("<ts-language>", tsl_type);
   scm_c_define("<%ts-parser>", tsp_type);
   scm_c_define("<ts-node>",tsn_type);
 #ifndef SCM_MAGIC_SNARFER

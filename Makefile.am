@@ -6,6 +6,7 @@ libguile_ts_la_SOURCES= \
 	ts/api.c \
 	ts/init.c \
 	ts/init.h \
+	ts/language.c \
 	ts/foreign.h\
 	ts/foreign.c \
 	ts/query.c
@@ -22,7 +23,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(libguile_ts_la_CFLAGS)
 EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm
-SOURCES= ts/api.scm ts/query.scm ts.scm
+SOURCES=ts/init.scm ts/query.scm ts.scm ts/language.scm  ts/api.scm
 GUILE_WARNINGS =                                          \
   -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
   -Wmacro-use-before-definition                           \

@@ -1,5 +1,7 @@
 (define-module (ts query)
+  #:use-module (ts init)
   #:use-module (ts api)
+  #:use-module (ts language)
   #:use-module (oop goops)
   #:export (ts-query-new
             ts-query-pattern-rooted?

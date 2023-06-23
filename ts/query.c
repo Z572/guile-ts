@@ -250,6 +250,19 @@ SCM_DEFINE(query_cursor_next_match, "ts-query-cursor-next-match",1,0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(query_cursor_remove_match, "ts-query-cursor-remove-match",2 ,0, 0,
+           (SCM cursor,SCM id),
+           "")
+#define FUNC_NAME s_query_cursor_remove_match
+{
+  ASSERT_QC(cursor);
+  TSQueryCursor *qc=foreign_object_ref(cursor);
+  scm_remember_upto_here_1(cursor);
+  ts_query_cursor_remove_match(qc,scm_to_uint32(id));
+  return SCM_UNSPECIFIED;
+}
+#undef FUNC_NAME
+
 static void init_enum() {
 #define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n,NULL)
   DEFINE_ENUM(TSQueryErrorNone);

@@ -126,6 +126,17 @@
       (ts-query-cursor-exec qc query root-node)
       (test-assert "ts-query-cursor-next-match: no match"
         (not (ts-query-cursor-next-match qc))))
+
+    (let* ((qc (ts-query-cursor-new))
+           (query (ts-query-new ts-json "(document (array (number) @number))"))
+           (parser (make <ts-parser> #:language ts-json))
+           (tree (ts-parser-parse-string parser #f "{}"))
+           (root-node (ts-tree-root-node tree)))
+      (ts-query-cursor-set-byte-range! qc 0 2)
+      (ts-query-cursor-exec qc query root-node)
+      (test-assert "ts-query-cursor-set-byte-range!"
+        (not (ts-query-cursor-next-match qc))))
+
     (let* ((qc (ts-query-cursor-new))
            (query (ts-query-new ts-json "(document (array (number) @number))
 (document (array ) @array)"))

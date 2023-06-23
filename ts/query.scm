@@ -12,6 +12,7 @@
             ts-query-string-value-for-id
             ts-query-capture-quantifier-for-id
             ts-query-start-byte-for-pattern
+            ts-query-cursor-set-byte-range!
             ts-query-cursor-next-match
             ts-query-cursor-remove-match
             ts-query-cursor-next-capture

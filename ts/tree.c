@@ -105,7 +105,7 @@ SCM_DEFINE(tst_root_node_with_offset, "%ts-tree-root-node-with-offset", 3, 0, 0,
 
 SCM_DEFINE(tst_edit, "%ts-tree-edit", 2, 0, 0,
            (SCM o, SCM edit), "")
-#define FUNC_NAME s_tst_root_node_with_offset
+#define FUNC_NAME s_tst_edit
 {
   ASSERT_TST(o);
   TSTree *tst = FR(o);

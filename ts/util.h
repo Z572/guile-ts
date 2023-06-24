@@ -2,6 +2,7 @@
 #define _GTS_API_H
 #include <libguile.h>
 #include <tree_sitter/api.h>
+#include "foreign.h"
 #define ASSERT_TSL(o) scm_assert_foreign_object_type(tsl_type, o)
 #define ASSERT_TSN(o)                                                   \
   scm_assert_foreign_object_type(tsn_type, o);
@@ -25,6 +26,12 @@ inline TSPoint cons_to_point(SCM cons) {
   };
   return point;
 }
+inline SCM make_range(TSRange *range){
+  SCM range_type=scm_c_private_ref("ts util", "<ts-range>");
+
+ return make_foreign_object(range_type, range);
+};
+
 void value_range_error (const char* subr,SCM bad_val, SCM min, SCM max) SCM_NORETURN;
 typedef struct Node Node;
 TSNode node_ref(Node *node);

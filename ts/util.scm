@@ -33,6 +33,12 @@
             #:accessor ts-range-end-byte
             #:init-keyword #:end-byte))
 
+(define-method (equal? (range1 <ts-range>) (range2 <ts-range>))
+  (and (equal? (ts-range-start-point range1) (ts-range-start-point range2))
+       (equal? (ts-range-end-point range1) (ts-range-end-point range2))
+       (equal? (ts-range-start-byte range1) (ts-range-start-byte range2))
+       (equal? (ts-range-end-byte range1) (ts-range-end-byte range2))))
+
 (define-method (initialize (obj <ts-range>) initargs)
   (let ((data (get-keyword #:%data initargs #f)))
     (if data

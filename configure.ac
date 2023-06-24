@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([guile-ts], [0.1.0], [873216071@qq.com])
-AC_CONFIG_SRCDIR([ts/api.c])
+AC_CONFIG_SRCDIR([ts/init.c])
 AC_CONFIG_HEADERS([ts/config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])

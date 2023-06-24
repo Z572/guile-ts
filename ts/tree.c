@@ -110,6 +110,29 @@ SCM_DEFINE(tst_root_node_with_offset, "%ts-tree-root-node-with-offset", 3, 0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tst_edit, "%ts-tree-edit", 2, 0, 0,
+           (SCM o, SCM edit), "")
+#define FUNC_NAME s_tst_root_node_with_offset
+{
+  ASSERT_TST(o);
+  TSTree *tst = FR(o);
+  SCM node;
+  const TSInputEdit tsie = {
+    .start_byte=scm_to_uint32(scm_list_ref(edit, scm_from_uint(0))),
+    .old_end_byte=scm_to_uint32(scm_list_ref(edit, scm_from_uint(1))),
+    .new_end_byte=scm_to_uint32(scm_list_ref(edit, scm_from_uint(2))),
+    .start_point=cons_to_point((scm_list_ref(edit, scm_from_uint(3)))),
+    .old_end_point=cons_to_point(scm_list_ref(edit, scm_from_uint(4))),
+    .new_end_point=cons_to_point(scm_list_ref(edit, scm_from_uint(5)))
+
+  };
+  scm_remember_upto_here_2(o,edit);
+  ts_tree_edit(tst, &tsie);
+  return SCM_UNSPECIFIED;
+}
+#undef FUNC_NAME
+
+
 SCM_DEFINE(tsn_string, "ts-node-string", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);

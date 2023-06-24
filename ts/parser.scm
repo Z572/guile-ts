@@ -13,7 +13,7 @@
             ts-parser-reset!
             ts-parser-timeout
             ts-parser-logger
-            ts-parser-print-dot-graphs            ))
+            ts-parser-print-dot-graphs))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_parser"))

@@ -39,8 +39,8 @@
             ts-tree-cursor-reset!
             ts-tree-language
             ts-tree-root-node
-            ts-tree-root-node-with-offset
-            ts-tree?))
+            ts-tree?
+            ts-tree-edit))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_tree"))
@@ -66,6 +66,16 @@
                      (list 0 offset-bytes)
                      (list offset-bytes (cons 0 0)))))
       (%ts-tree-root-node tree)))
+
+(define* (ts-tree-edit tree start old-end new-end
+                       start-point
+                       old-end-point
+                       new-end-point)
+  (%ts-tree-edit
+   tree
+   (list start old-end new-end
+         start-point old-end-point new-end-point)))
+
 (define-method (ts-node-sexp (node <ts-node>))
   (call-with-input-string (ts-node-string node) read))
 

@@ -82,6 +82,19 @@
     (test-equal "ts-tree-root-node: offset, byte only"
       200 (ts-node-start-byte
            (ts-tree-root-node tree 200))))
+  (let* ((old-source "[11]")
+         (new-source "[20,11]")
+         (parser (make <ts-parser> #:language json-language))
+         (tree (ts-parser-parse-string parser #f old-source)))
+    (test-equal "ts-tree-edit"
+      '(document (array (number) (number)))
+      (begin (ts-tree-edit tree 0 (string-length old-source) (string-length new-source)
+                           (cons 0 0)
+                           (cons 0 (string-length old-source))
+                           (cons 0 (string-length new-source)))
+             (ts-node-sexp
+              (ts-tree-root-node
+               (ts-parser-parse-string parser tree new-source))))))
   (let* ((source "[11]")
          (parser (make <ts-parser> #:language json-language))
          (_ (test-equal "ts-parser-logger: unset"

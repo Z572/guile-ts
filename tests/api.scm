@@ -95,6 +95,24 @@
              (ts-node-sexp
               (ts-tree-root-node
                (ts-parser-parse-string parser tree new-source))))))
+  (let* ((old-source "[11]")
+         (new-source "[21,11]")
+         (parser (make <ts-parser> #:language json-language))
+         (tree (ts-parser-parse-string parser #f old-source)))
+    (test-equal "ts-tree-get-changed-ranges"
+      (list (make <ts-range>
+              #:start-byte 1
+              #:end-byte 4
+              #:start-point '(0 . 1)
+              #:end-point '(0 . 4)))
+      (begin
+        (ts-tree-edit tree 1 1 4
+                      (cons 0 1)
+                      (cons 0 1)
+                      (cons 0 4))
+        (ts-tree-get-changed-ranges
+         tree
+         (ts-parser-parse-string parser tree new-source)))))
   (let* ((source "[11]")
          (parser (make <ts-parser> #:language json-language))
          (_ (test-equal "ts-parser-logger: unset"

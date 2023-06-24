@@ -40,7 +40,8 @@
             ts-tree-language
             ts-tree-root-node
             ts-tree?
-            ts-tree-edit))
+            ts-tree-edit
+            ts-tree-get-changed-ranges))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_tree"))

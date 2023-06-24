@@ -125,6 +125,26 @@ SCM_DEFINE(tst_edit, "%ts-tree-edit", 2, 0, 0,
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tst_get_changed_ranges, "ts-tree-get-changed-ranges", 2, 0, 0,
+           (SCM tree1, SCM tree2), "")
+#define FUNC_NAME s_tst_get_changed_ranges
+{
+  ASSERT_TST(tree1);
+  ASSERT_TST(tree2);
+  TSTree *tst1 = FR(tree1);
+  TSTree *tst2 = FR(tree2);
+  uint32_t length;
+  TSRange *ranges=ts_tree_get_changed_ranges(tst1, tst2, &length);
+  SCM list=scm_make_list(scm_from_uint32(length), SCM_BOOL_F);
+  for (unsigned i = 0; i < length; i++) {
+    TSRange *r=&ranges[i];
+    scm_list_set_x(list, scm_from_unsigned_integer(i), make_range(r));
+  }
+  scm_remember_upto_here_2(tree1,tree2);
+  return list;
+}
+#undef FUNC_NAME
+
 
 SCM_DEFINE(tsn_string, "ts-node-string", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);

@@ -34,7 +34,22 @@
                         #:select? (git-predicate %srcdir)))
     (build-system gnu-build-system)
     (arguments
-     (list #:make-flags #~(list "GUILE_AUTO_COMPILE=0")))
+     (list #:make-flags #~(list "GUILE_AUTO_COMPILE=0")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'build 'load-extension
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (substitute*
+                       (find-files "." ".*\\.scm")
+                     (("\\(load-extension \"libguile_ts\" *\"(.*)\"\\)" _ o)
+                      (string-append
+                       (object->string
+                        `(or (false-if-exception (load-extension "libguile_ts" ,o))
+                             (load-extension
+                              ,(string-append
+                                #$output
+                                "/lib/libguile_ts.so")
+                              ,o)))))))))))
     (native-inputs
      (list autoconf automake
            libtool

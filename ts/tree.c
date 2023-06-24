@@ -30,10 +30,9 @@ static void node_finalizer(SCM o) {
   Node *node=FR(o);
   gts_free(node);
 }
-static void init_ts_node_type(void) {
-  tsn_type=make_foreign_object_type("<ts-node>", node_finalizer);
-}
-static SCM tstc_type;
+
+DEFINE_FOREGE_TYPE(tsn_type,"<ts-node>",NULL,node_finalizer);
+
 typedef struct {
   TSTreeCursor cursor;
 } Tcursor;
@@ -41,20 +40,14 @@ typedef struct {
 static void ts_tree_finalizer(SCM scm) {
   ts_tree_delete(FR(scm));
 }
-
-void init_ts_tree_type(void) {
-  tst_type = make_foreign_object_type("<ts-tree>", ts_tree_finalizer);
-  scm_c_define("<ts-tree>",tst_type);
-}
+DEFINE_FOREGE_TYPE(tst_type,"<ts-tree>",NULL,ts_tree_finalizer);
 
 static void ts_tcursor_finalizer(SCM cursor) {
   Tcursor *tc = FR(cursor);
   ts_tree_cursor_delete(&tc->cursor);
   gts_free(tc);
 }
-static void init_ts_tcursor_type(void) {
-  tstc_type = make_foreign_object_type("<ts-tree-cursor>", ts_tcursor_finalizer);
-}
+DEFINE_FOREGE_TYPE(tstc_type,"<ts-tree-cursor>",NULL,ts_tcursor_finalizer);
 #define ASSERT_TSTC(o)                                 \
   scm_assert_foreign_object_type(tstc_type, o)
 
@@ -448,10 +441,6 @@ SCM_DEFINE(tstc_goto_first_child, "ts-tree-cursor-goto-first-child", 1, 0, 0,
 }
 #undef FUNC_NAME
 void init_ts_tree() {
-  init_ts_tree_type();
-  init_ts_node_type();
-  init_ts_tcursor_type();
-  scm_c_define("<ts-node>",tsn_type);
 #ifndef SCM_MAGIC_SNARFER
 #include "tree.x"
 #endif

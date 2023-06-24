@@ -7,9 +7,7 @@
 
 static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
 
-void init_ts_parser_type(void) {
-  tsp_type = make_foreign_object_type("<%ts-parser>", ts_parser_finalizer);
-}
+DEFINE_FOREGE_TYPE(tsp_type,"<%ts-parser>",NULL,ts_parser_finalizer);
 
 inline static void log_call(void *payload, TSLogType logtype, const char *string) {
   SCM proc=payload;
@@ -158,8 +156,6 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
 #undef FUNC_NAME
 
 void init_ts_parser() {
-  init_ts_parser_type();
-  scm_c_define("<%ts-parser>", tsp_type);
 #ifndef SCM_MAGIC_SNARFER
 #include "parser.x"
 #endif

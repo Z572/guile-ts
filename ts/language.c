@@ -5,6 +5,8 @@
 #include "foreign.h"
 #include "util.h"
 
+DEFINE_FOREGE_TYPE(tsl_type,"<ts-language>",NULL,NULL);
+
 SCM_DEFINE(ref_or_set, "%rf", 2, 0, 0, (SCM type,SCM point),
            "") {
   return make_foreign_object(type,scm_to_pointer(point));
@@ -42,13 +44,7 @@ SCM_DEFINE(tsl_version, "ts-language-version", 1, 0, 0,
   ASSERT_TSL(o);
   return scm_from_uint32(ts_language_version(FR(o)));
 }
-
-void init_ts_language_type(void) {
-  tsl_type = make_foreign_object_type("<ts-language>", NULL);
-}
 void init_ts_language() {
-  init_ts_language_type();
-  scm_c_define("<ts-language>", tsl_type);
 #ifndef SCM_MAGIC_SNARFER
 #include "language.x"
 #endif

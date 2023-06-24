@@ -3,32 +3,32 @@
 #include <string.h>
 #include "foreign.h"
 #include "util.h"
-static SCM query_type;
-static SCM query_cursor_type;
-
 #define ASSERT_QUERY(o) scm_assert_foreign_object_type(query_type, o)
 #define ASSERT_QC(o) scm_assert_foreign_object_type(query_cursor_type, o)
 static void query_finalizer(SCM q) {
   TSQuery *query=foreign_object_ref(q);
   ts_query_delete(query);
 }
-static void init_query(void) {
-  SCM name, slots;
-  char *cname="<ts-query>";
-  query_type=make_foreign_object_type(cname,query_finalizer);
-  scm_c_define(cname,query_type);
-}
 static void qc_finalizer(SCM qc) {
   TSQueryCursor *c=foreign_object_ref(qc);
   ts_query_cursor_delete(c);
 }
 
-static void init_query_cursor(void) {
-  SCM name, slots;
-  char *cname="<ts-query-cursor>";
-  query_cursor_type=make_foreign_object_type(cname,qc_finalizer);
-  scm_c_define(cname,query_type);
-}
+DEFINE_FOREGE_TYPE(query_type,"<ts-query>",NULL,query_finalizer);
+DEFINE_FOREGE_TYPE(query_cursor_type,"<ts-query-cursor>",NULL,qc_finalizer);
+DEFINE_ENUM(TSQueryErrorNone);
+DEFINE_ENUM(TSQueryErrorSyntax);
+DEFINE_ENUM(TSQueryErrorNodeType);
+DEFINE_ENUM(TSQueryErrorField);
+DEFINE_ENUM(TSQueryErrorCapture);
+DEFINE_ENUM(TSQueryErrorStructure);
+DEFINE_ENUM(TSQueryErrorLanguage);
+
+DEFINE_ENUM(TSQuantifierZero);
+DEFINE_ENUM(TSQuantifierZeroOrOne);
+DEFINE_ENUM(TSQuantifierZeroOrMore);
+DEFINE_ENUM(TSQuantifierOne);
+DEFINE_ENUM(TSQuantifierOneOrMore);
 
 SCM_DEFINE(query_new, "ts-query-new", 2,0, 0,
            (SCM language,SCM source),
@@ -304,28 +304,7 @@ SCM_DEFINE(query_cursor_next_capture, "ts-query-cursor-next-capture",1,0, 0,
 }
 #undef FUNC_NAME
 
-static void init_enum() {
-#define DEFINE_ENUM(n)   scm_c_define(#n, scm_from_uint32(n)); scm_c_export(#n,NULL)
-  DEFINE_ENUM(TSQueryErrorNone);
-  DEFINE_ENUM(TSQueryErrorSyntax);
-  DEFINE_ENUM(TSQueryErrorNodeType);
-  DEFINE_ENUM(TSQueryErrorField);
-  DEFINE_ENUM(TSQueryErrorCapture);
-  DEFINE_ENUM(TSQueryErrorStructure);
-  DEFINE_ENUM(TSQueryErrorLanguage);
-
-  DEFINE_ENUM(TSQuantifierZero);
-  DEFINE_ENUM(TSQuantifierZeroOrOne);
-  DEFINE_ENUM(TSQuantifierZeroOrMore);
-  DEFINE_ENUM(TSQuantifierOne);
-  DEFINE_ENUM(TSQuantifierOneOrMore);
-#undef DEFINE_ENUM
-}
-
 void init_ts_query() {
-  init_enum();
-  init_query();
-  init_query_cursor();
 #ifndef SCM_MAGIC_SNARFER
 #include "query.x"
 #endif

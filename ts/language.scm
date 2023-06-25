@@ -8,6 +8,7 @@
   #:use-module (system foreign-object)
   #:export (get-ts-language-from-file
             ts-language-field-count
+            ts-language-symbol-count
             ts-language-field-name-for-id
             ts-language-version))
 

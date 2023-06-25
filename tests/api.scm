@@ -45,6 +45,8 @@
      (make <ts-parser> #:language json-language)))
   (test-equal "language version"
     14 (ts-language-version json-language))
+  (test-equal "ts-language-symbol-count"
+    26 (ts-language-symbol-count json-language))
   (test-equal "ts-language-field-count"
     2 (ts-language-field-count json-language))
   (test-equal "ts-language-field-name-for-id"

@@ -39,6 +39,17 @@ SCM_DEFINE(tsl_symbol_type, "ts-language-symbol-type", 2, 0, 0,
   return scm_from_uint32(ts_language_symbol_type(FR(o),scm_to_uint16(n)));
 }
 
+SCM_DEFINE(tsl_symbol_count, "ts-language-symbol-count", 1, 0, 0,
+           (SCM language), "")
+#define FUNC_NAME s_tsl_symbol_count
+{
+  ASSERT_TSL(language);
+  TSLanguage *l=FR(language);
+  scm_remember_upto_here_1(language);
+  return scm_from_uint32(ts_language_symbol_count(l));
+}
+#undef FUNC_NAME
+
 SCM_DEFINE(tsl_version, "ts-language-version", 1, 0, 0,
            (SCM o), "") {
   ASSERT_TSL(o);

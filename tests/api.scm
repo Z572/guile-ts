@@ -96,6 +96,21 @@
               (ts-tree-root-node
                (ts-parser-parse-string parser tree new-source))))))
   (let* ((old-source "[11]")
+         (new-source "[20,11]")
+         (parser (make <ts-parser> #:language json-language))
+         (tree (ts-parser-parse-string parser #f old-source)))
+    (test-assert "ts-node-has-changes?"
+      (begin (ts-tree-edit tree 0
+                           (string-length old-source)
+                           (string-length new-source)
+                           (cons 0 0)
+                           (cons 0 (string-length old-source))
+                           (cons 0 (string-length new-source)))
+
+             (ts-node-has-changes?
+              (ts-node-child (ts-node-child
+                              (ts-tree-root-node tree) 0) 0 #t)))))
+  (let* ((old-source "[11]")
          (new-source "[21,11]")
          (parser (make <ts-parser> #:language json-language))
          (tree (ts-parser-parse-string parser #f old-source)))

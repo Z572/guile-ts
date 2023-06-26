@@ -1,0 +1,78 @@
+@c -* texinfo -*-
+@c This file is part of Guile-TS Reference Manual.
+@c Copyright (C) 2023 Zheng Junjie
+@c See the file guile-ts.texi for copying conditions.
+
+@node Tree
+@section Tree
+
+@deffn {Scheme Procedure} ts-tree-root-node tree #:optional offset-bytes offset-point
+Returns a @var{<ts-node>}, @var{offset-bytes} can a number or a cons,
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree? tree
+Returns @code{#t} if tree is a @var{<ts-tree>}, or @code{#f} other
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-copy tree
+
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-language tree
+Get the language that was used to parse the syntax tree.
+@end deffn
+
+
+@node Tree-Cursor
+@section Tree-Cursor
+@deffn {Scheme Procedure} ts-tree-cursor-new
+ Create a new tree cursor starting from the given node.
+ 
+ A tree cursor allows you to walk a syntax tree more efficiently than is
+ possible using the `ts-node' procedures. It is a mutable object that is always
+ on a certain syntax node, and can be moved imperatively to different nodes.
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-cursor-reset! tcursor node
+Re-initialize a @var{<tree-cursor>} to start at a different node.
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-cursor-current-node tcursor
+Get the tree cursor current node.
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-cursor-copy
+Get the field name of the tree cursor's current node.
+return @code{#f} if the current node doesn't have a field.
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-cursor-current-field-name tree
+
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-cursor-goto-parent cursor
+Move the cursor to the parent of its current node.
+This returns @code{#t} if the cursor successfully moved, and returns @code{#f}
+if there was no parent node (the cursor was already on the root node).
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-cursor-goto-next-sibling cursor
+Move the cursor to the next sibling of its current node.
+This returns @code{#t} if the cursor successfully moved, and returns @code{#f}
+if there was no next sibling node.
+@end deffn
+
+@deffn {Scheme Procedure} ts-tree-cursor-goto-first-child cursor
+Move the cursor to the first child of its current node.
+This returns @code{#t} if the cursor successfully moved, and returns @code{#f}
+if there were no children.
+@end deffn
+
+
+@node Node
+@section Node
+
+@deffn {Scheme Procedure} ts-node-childs [named?]
+return node's unamed childs, if @var{named?}, return named childs.
+@end deffn
+

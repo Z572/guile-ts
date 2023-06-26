@@ -1,0 +1,19 @@
+@c -* texinfo -*-
+@c This file is part of Guile-TS Reference Manual.
+@c Copyright (C) 2023 Zheng Junjie
+@c See the file guile-ts.texi for copying conditions.
+
+@node Query
+@section Query
+
+@deffn {Scheme Procedure} ts-query-new language #:rest sources
+@end deffn
+
+@node Query-Cursor
+@section Query-Cursor
+
+@deffn {Scheme Procedure} ts-query-cursor-new
+@end deffn
+
+@deffn {Scheme Procedure} ts-query-cursor-exec qc query node
+@end deffn

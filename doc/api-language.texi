@@ -1,0 +1,10 @@
+@c -* texinfo -*-
+@c This file is part of Guile-TS Reference Manual.
+@c Copyright (C) 2023 Zheng Junjie
+@c See the file guile-ts.texi for copying conditions.
+
+@node Language
+@section Language
+
+@deffn {Scheme Procedure} get-ts-language-from-file lib name
+@end deffn

@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 SUFFIXES = .scm .go .c .x
-
+SUBDIRS= doc
 libguile_ts_la_SOURCES= \
 	ts/util.h		\
 	ts/util.c		\

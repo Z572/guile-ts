@@ -1,0 +1,19 @@
+@c -* texinfo -*-
+@c This file is part of Guile-TS Reference Manual.
+@c Copyright (C) 2023 Zheng Junjie
+@c See the file guile-ts.texi for copying conditions.
+
+@node Parser
+@section Parser
+
+@deffn {Scheme Procedure} ts-parser-new [keywords]
+Returns a @var{<ts-parser>} object, keywords alive value is language timeout include-ranges
+@lisp
+(ts-parser-new #:language a-ts-language-object
+               #:timeout 20)
+@end lisp
+@end deffn
+
+@deffn {Scheme Procedure} ts-parser-parse-string parser old-tree string #:optional length
+Returns a <ts-tree> object, @var{old-tree} need @var{<ts-tree>} or @var{#f}, @var{string} is expect you source code
+@end deffn

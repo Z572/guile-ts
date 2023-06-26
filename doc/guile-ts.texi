@@ -1,0 +1,105 @@
+\input texinfo
+@c -*-texinfo-*-
+@c %**start of header
+@setfilename guile-ts.info
+@documentencoding UTF-8
+@settitle Guile-TS Reference Manual
+@c %**end of header
+@include version.texi
+
+@copying
+This manual documents Guile-TS version @value{VERSION}.
+
+Copyright @copyright{} 2023 Zheng Junjie@*
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License.''
+@end copying
+
+@setchapternewpage odd
+
+@titlepage
+@sp 10
+
+@title Guile-TS Reference Manual
+@subtitle For Guile-TS @value{VERSION}
+@author Zheng Junjie
+
+@insertcopying
+@end titlepage
+
+@dircategory Software development
+@direntry
+* Guile-TS: (guile-ts). Guile bindings for tree-sitter.
+@end direntry
+@c *********************************************************************
+@node Top
+
+This document describes Guile-TS version @value{VERSION}.
+
+
+@menu
+* Installation::            Installing Guile-TS.
+* Parser::                  parser
+* Tree::                    tree
+
+Appendices
+
+* GNU Free Documentation License::  The license of this manual.
+
+Indices
+
+* Type Index::
+* Procedure Index::
+* Concept Index::
+
+@end menu
+@node Installation
+@chapter Installation
+Guile-TS sources are available from GitHub at
+@url{https://github.com/Z572/guile-ts/}, This section
+describes requirements of Guile-TS and installation process.
+
+Guile-TS depends on the following packages:
+
+@itemize
+@item @url{https://www.gnu.org/software/guile/, GNU Guile}
+@item @url{http://githbu.com/tree-sitter/tree-sitter, tree-sitter}
+@end itemize
+
+Get the sources of Guile-TS from GitHub:
+
+@example
+$ git clone git@@github.com:Z572/guile-ts.git
+@end example
+
+Configure the sources:
+
+@example
+$ cd guile-ts/
+$ ./bootstrap
+$ ./configure
+@end example
+
+Build and install the library:
+
+@example
+$ make
+$ make install
+@end example
+
+For a basic explanation of the installation of the package, see the
+@file{INSTALL} file.
+
+@include api-parser.texi
+@include api-tree.texi
+@node GNU Free Documentation License
+@appendix GNU Free Documentation License
+
+@include fdl.texi
+@include indices.texi
+@bye

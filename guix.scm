@@ -53,6 +53,7 @@
     (native-inputs
      (list autoconf automake
            libtool
+           texinfo
            pkg-config
            guile-3.0-latest))
     (inputs (list guile-3.0-latest tree-sitter))

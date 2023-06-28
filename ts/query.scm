@@ -3,8 +3,10 @@
   #:use-module (ts util)
   #:use-module (ts language)
   #:use-module (oop goops)
+  #:use-module (srfi srfi-171)
   #:export (ts-query-new
             ts-query-pattern-rooted?
+            ts-query-predicates-for-pattern
             ts-query-cursor-new
             ts-query-cursor-exec
             ts-query-pattern-count
@@ -29,3 +31,10 @@
   (id #:getter ts-query-match-id)
   (pattern-index #:getter ts-query-match-pattern-index)
   (captures #:getter ts-query-match-captures))
+
+(define (ts-query-predicates-for-pattern self index)
+  (let ((steps (%ts-query-predicates-for-pattern self index)))
+    (list-transduce (compose
+                     (tpartition (lambda (o) (eq? (car o) 'done)))
+                     (tremove (lambda (o) (equal? o '((done . #f))))))
+                    rcons steps)))

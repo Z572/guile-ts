@@ -36,7 +36,15 @@
       (test-equal "ts-query-string-count"
         0 (ts-query-string-count query)))
 
-
+    (let* ((query (ts-query-new
+                   ts-json
+                   "((document (array (number) @num (number) @num2))
+(#match \"^a\" @num)
+(#eq \"^b\" @num))")))
+      (test-equal "ts-query-predicates-for-pattern"
+        '(((string . "match") (string . "^a") (capture . "num"))
+          ((string . "eq") (string . "^b") (capture . "num")))
+        (ts-query-predicates-for-pattern query 0)))
 
     (let* ((query (ts-query-new
                    ts-json

@@ -178,8 +178,54 @@ SCM_DEFINE(query_start_byte_for_pattern, "ts-query-start-byte-for-pattern",2,0, 
   }
   return scm_from_uint32(ts_query_start_byte_for_pattern(query,pat_id));
 }
-
 #undef FUNC_NAME
+
+SCM_DEFINE(query_predicates_for_pattern, "%ts-query-predicates-for-pattern", 2,
+           0, 0, (SCM tsq, SCM index), "")
+#define FUNC_NAME s_query_predicates_for_pattern
+{
+  ASSERT_QUERY(tsq);
+  uint32_t length;
+  const TSQuery *self = FR(tsq);
+  const TSQueryPredicateStep *tsq_ps =
+    ts_query_predicates_for_pattern(self, scm_to_uint32(index), &length);
+  scm_remember_upto_here_2(tsq, index);
+  SCM list=scm_make_list(scm_from_uint32(length), SCM_UNSPECIFIED);
+  for (unsigned i = 0; i < length; i++) {
+    const TSQueryPredicateStep *step=&tsq_ps[i];
+    SCM sym;
+    SCM value;
+    switch (step->type) {
+    case TSQueryPredicateStepTypeString:
+      sym = scm_from_utf8_symbol("string");
+      {
+        uint32_t length;
+        const char *string =
+          ts_query_string_value_for_id(self, step->value_id, &length);
+        value = scm_from_utf8_stringn(string, length);
+      }
+      break;
+    case TSQueryPredicateStepTypeCapture:
+      sym=scm_from_utf8_symbol("capture");
+      {
+        uint32_t length;
+        const char *string =
+          ts_query_capture_name_for_id(self, step->value_id, &length);
+        value = scm_from_utf8_stringn(string, length);
+      }
+      break;
+    case TSQueryPredicateStepTypeDone:
+      sym=scm_from_utf8_symbol("done");
+      value=SCM_BOOL_F;
+      break;
+
+    }
+    scm_list_set_x(list, scm_from_unsigned_integer(i), scm_cons(sym, value));
+  }
+  return list;
+}
+#undef FUNC_NAME
+
 
 SCM_DEFINE(query_cursor_new, "ts-query-cursor-new", 0,0, 0,
            (),

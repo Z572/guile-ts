@@ -80,11 +80,11 @@ SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
            "") {
   ASSERT_TSP(o);
   TSParser *tsp = FR(o);
-  uint32_t *length=gts_malloc(sizeof(uint32_t *));
-  TSRange *range=ts_parser_included_ranges(tsp, length);
+  uint32_t length;
+  TSRange *range=ts_parser_included_ranges(tsp, &length);
   scm_remember_upto_here_1(o);
   SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
-  for (unsigned i = 0; i < *length; i++) {
+  for (unsigned i = 0; i < length; i++) {
     TSRange *r=&range[i];
     list=scm_cons(make_range(r),list);
   }

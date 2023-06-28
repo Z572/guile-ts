@@ -5,9 +5,6 @@
 #include "foreign.h"
 #include "util.h"
 
-#define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o);\
-    scm_remember_upto_here_1(o)
-
 void
 value_range_error (const char* subr, SCM bad_val, SCM min, SCM max)
 {

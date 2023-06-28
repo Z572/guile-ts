@@ -11,6 +11,9 @@
     scm_remember_upto_here_1(o)
 #define ASSERT_TSP(o) scm_assert_foreign_object_type(tsp_type, o); \
   scm_remember_upto_here_1(o)
+#define ASSERT_TSR(o) scm_assert_foreign_object_type(tsr_type, o);\
+    scm_remember_upto_here_1(o)
+
 extern SCM tsp_type;
 extern SCM tsl_type;
 extern SCM tst_type;

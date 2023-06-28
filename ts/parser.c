@@ -83,10 +83,10 @@ SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
   uint32_t length;
   TSRange *range=ts_parser_included_ranges(tsp, &length);
   scm_remember_upto_here_1(o);
-  SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
+  SCM list=scm_make_list(scm_from_uint8(length), SCM_UNSPECIFIED);
   for (unsigned i = 0; i < length; i++) {
     TSRange *r=&range[i];
-    list=scm_cons(make_range(r),list);
+    scm_list_set_x(list,scm_from_unsigned_integer(i), make_range(r));
   }
   return list;
 }

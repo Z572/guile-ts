@@ -293,14 +293,14 @@ SCM_DEFINE(query_cursor_next_match, "ts-query-cursor-next-match",1,0, 0,
   TSQueryMatch tsq_match;
   bool success=ts_query_cursor_next_match(qc, &tsq_match);
   if (success) {
-    SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
+    SCM list=scm_make_list(scm_from_uint8(tsq_match.capture_count), SCM_UNSPECIFIED);
     SCM match=scm_make(scm_list_1(scm_c_private_ref("ts query","<ts-query-match>")));
 
     scm_slot_set_x(match, scm_from_utf8_symbol("id"), scm_from_uint32(tsq_match.id));
     scm_slot_set_x(match, scm_from_utf8_symbol("pattern-index"), scm_from_uint32(tsq_match.pattern_index));
     for (unsigned i = 0; i < tsq_match.capture_count; i++) {
       SCM node = make_node(tsq_match.captures[i].node);
-      list = scm_cons(scm_cons(node,scm_from_uint32(tsq_match.captures[i].index)), list);
+      scm_list_set_x(list, scm_from_unsigned_integer(i), scm_cons(node,scm_from_uint32(tsq_match.captures[i].index)));
     }
     scm_slot_set_x(match, scm_from_utf8_symbol("captures"), list);
     return match;
@@ -334,14 +334,14 @@ SCM_DEFINE(query_cursor_next_capture, "ts-query-cursor-next-capture",1,0, 0,
   uint32_t capture_index;
   bool success=ts_query_cursor_next_capture(qc, &tsq_match,&capture_index);
   if (success) {
-    SCM list=scm_make_list(scm_from_uint8(0), SCM_UNSPECIFIED);
+    SCM list=scm_make_list(scm_from_uint8(tsq_match.capture_count), SCM_UNSPECIFIED);
     SCM match=scm_make(scm_list_1(scm_c_private_ref("ts query","<ts-query-match>")));
 
     scm_slot_set_x(match, scm_from_utf8_symbol("id"), scm_from_uint32(tsq_match.id));
     scm_slot_set_x(match, scm_from_utf8_symbol("pattern-index"), scm_from_uint32(tsq_match.pattern_index));
     for (unsigned i = 0; i < tsq_match.capture_count; i++) {
       SCM node = make_node(tsq_match.captures[i].node);
-      list = scm_cons(scm_cons(node,scm_from_uint32(tsq_match.captures[i].index)), list);
+      scm_list_set_x(list,scm_from_unsigned_integer(i), scm_cons(node,scm_from_uint32(tsq_match.captures[i].index)));
     }
     scm_slot_set_x(match, scm_from_utf8_symbol("captures"), list);
     return scm_values_2(match,scm_from_uint32(capture_index));

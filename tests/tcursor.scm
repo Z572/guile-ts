@@ -52,6 +52,14 @@
                (ts-tree-cursor-current-node cursor))))
 
     (let ((cursor (ts-tree-cursor-new root)))
+      (test-equal "ts-tree-cursor-goto-first-child-for-byte"
+        3 (begin (ts-tree-cursor-goto-first-child cursor)
+                 (ts-tree-cursor-goto-first-child-for-byte cursor 4))))
+    (let ((cursor (ts-tree-cursor-new root)))
+      (test-equal "ts-tree-cursor-goto-first-child-for-byte: out of range"
+        #f (ts-tree-cursor-goto-first-child-for-byte cursor 50)))
+
+    (let ((cursor (ts-tree-cursor-new root)))
       (test-equal "ts-tree-cursor-goto-parent: no parent"
         #f (ts-tree-cursor-goto-parent cursor)))
 

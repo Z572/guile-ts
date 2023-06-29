@@ -472,7 +472,25 @@ SCM_DEFINE(tstc_goto_next_sibling, "ts-tree-cursor-goto-next-sibling", 1, 0, 0,
   scm_remember_upto_here_1(cursor);
   return success;
 }
-
+#undef FUNC_NAME
+SCM_DEFINE(tstc_goto_first_child_for_byte, "ts-tree-cursor-goto-first-child-for-byte", 2, 0, 0,
+           (SCM cursor, SCM byte),
+           "")
+#define FUNC_NAME s_tstc_goto_first_child_for_byte
+{
+  ASSERT_TSTC(cursor);
+  Tcursor *tc = FR(cursor);
+  int64_t index = ts_tree_cursor_goto_first_child_for_byte(&tc->cursor, scm_to_uint32(byte));
+  SCM success;
+  if (index == -1) {
+    success= SCM_BOOL_F;
+  } else {
+    success=scm_from_int64(index);
+  }
+  scm_remember_upto_here_1(cursor);
+  return success;
+}
+#undef FUNC_NAME
 void init_ts_tree() {
 #ifndef SCM_MAGIC_SNARFER
 #include "tree.x"

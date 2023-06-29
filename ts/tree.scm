@@ -35,6 +35,7 @@
             ts-tree-cursor-current-node
             ts-tree-cursor-goto-parent
             ts-tree-cursor-goto-first-child
+            ts-tree-cursor-goto-first-child-for-byte
             ts-tree-cursor-goto-next-sibling
             ts-tree-cursor-new
             ts-tree-cursor-reset!

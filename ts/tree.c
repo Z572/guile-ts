@@ -460,6 +460,19 @@ SCM_DEFINE(tstc_goto_first_child, "ts-tree-cursor-goto-first-child", 1, 0, 0,
   return g_p;
 }
 #undef FUNC_NAME
+
+SCM_DEFINE(tstc_goto_next_sibling, "ts-tree-cursor-goto-next-sibling", 1, 0, 0,
+           (SCM cursor),
+           "")
+#define FUNC_NAME s_tstc_goto_next_sibling
+{
+  ASSERT_TSTC(cursor);
+  Tcursor *tc = FR(cursor);
+  SCM success=scm_from_bool(ts_tree_cursor_goto_next_sibling(&tc->cursor));
+  scm_remember_upto_here_1(cursor);
+  return success;
+}
+
 void init_ts_tree() {
 #ifndef SCM_MAGIC_SNARFER
 #include "tree.x"

@@ -53,4 +53,12 @@
 
     (let ((cursor (ts-tree-cursor-new root)))
       (test-equal "ts-tree-cursor-goto-parent: no parent"
-        #f (ts-tree-cursor-goto-parent cursor)))))
+        #f (ts-tree-cursor-goto-parent cursor)))
+
+    (let ((cursor (ts-tree-cursor-new root)))
+      (test-equal "ts-tree-cursor-goto-next-sibling"
+        (ts-node-next-sibling (ts-node-child (ts-node-child root 0) 0))
+        (begin (ts-tree-cursor-goto-first-child cursor)
+               (ts-tree-cursor-goto-first-child cursor)
+               (ts-tree-cursor-goto-next-sibling cursor)
+               (ts-tree-cursor-current-node cursor))))))

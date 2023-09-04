@@ -192,7 +192,7 @@ SCM_DEFINE(tsn_has_error_p, "ts-node-has-error?", 1, 0, 0,
   Node *node=FR(o);
   SCM tree=node_tree(node->node);
   SCM has_error_p=scm_from_bool(ts_node_has_error(node_ref(node)));
-  scm_remember_upto_here_2(node,tree);
+  scm_remember_upto_here_2(o,tree);
   return has_error_p;
 }
 
@@ -201,18 +201,21 @@ SCM_DEFINE(tsn_type_, "ts-node-type", 1, 0, 0, (SCM o), "") {
   Node *node = FR(o);
   // some node is unamed, e.g. it type is "[" it symbol is #{\x5b;}#
   // so cann't return a symbol.
+  scm_remember_upto_here_1(o);
   return scm_from_utf8_string(ts_node_type(node_ref(node)));
 }
 
 SCM_DEFINE(tsn_symbol, "ts-node-symbol", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
+  scm_remember_upto_here_1(o);
   return scm_from_uint16(ts_node_symbol(node_ref(node)));
 }
 
 SCM_DEFINE(tsn_start_byte, "ts-node-start-byte", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
+  scm_remember_upto_here_1(o);
   return scm_from_uint32(ts_node_start_byte(node_ref(node)));
 }
 
@@ -220,18 +223,21 @@ SCM_DEFINE(tsn_start_point, "ts-node-start-point", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSPoint point=ts_node_start_point(node_ref(node));
+  scm_remember_upto_here_1(o);
   return point_to_cons(point);
 }
 
 SCM_DEFINE(tsn_end_byte, "ts-node-end-byte", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
+  scm_remember_upto_here_1(o);
   return scm_from_uint32(ts_node_end_byte(node_ref(node)));
 }
 
 SCM_DEFINE(tsn_end_point, "ts-node-end-point", 1, 0, 0, (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
+  scm_remember_upto_here_1(o);
   return point_to_cons(ts_node_end_point(node_ref(node)));
 }
 
@@ -240,6 +246,7 @@ SCM_DEFINE(tsn_child_count, "ts-node-child-count", 1, 1, 0,
   ASSERT_TSN(o);
   bool c_named=SCM_UNBNDP(named) ? false : scm_to_bool(named);
   Node *node=FR(o);
+  scm_remember_upto_here_2(o,named);
   return scm_from_uint32(c_named
                          ? ts_node_named_child_count(node_ref(node))
                          : ts_node_child_count(node_ref(node)));
@@ -252,6 +259,7 @@ SCM_DEFINE(tsn_parent, "ts-node-parent", 1, 0, 0, (SCM o), "")
   Node *node=FR(o);
   TSNode tsn=node_ref(node);
   TSNode root_node=ts_tree_root_node(node_ref(node).tree);
+  scm_remember_upto_here(o);
   return make_node(ts_node_parent(tsn));
 }
 #undef FUNC_NAME
@@ -262,8 +270,10 @@ SCM_DEFINE(tsn_child, "ts-node-child", 2, 1, 0, (SCM o,SCM n,SCM named), "")
 {
   ASSERT_TSN(o);
   Node *node=FR(o);
+  scm_remember_upto_here_1(o);
   TSNode t_node=node_ref(node);
   bool is_named=SCM_UNBNDP(named) ? false : scm_to_bool(named);
+  scm_remember_upto_here_1(named);
   uint32_t c_n=scm_to_uint32(n);
   {
     uint32_t count =is_named
@@ -274,6 +284,7 @@ SCM_DEFINE(tsn_child, "ts-node-child", 2, 1, 0, (SCM o,SCM n,SCM named), "")
       value_range_error(FUNC_NAME, n, scm_from_uint32(0), scm_from_uint32(count));
     }
   }
+  scm_remember_upto_here_1(n);
   return make_node(is_named
                    ? ts_node_named_child(t_node,c_n)
                    : ts_node_child(t_node,c_n));
@@ -285,6 +296,7 @@ SCM_DEFINE(tsn_field_name_for_child, "ts-node-field-name-for-child", 2, 0, 0,
   ASSERT_TSN(o);
   Node *node=FR(o);
   const char *c=ts_node_field_name_for_child(node_ref(node),scm_to_uint32(n));
+  scm_remember_upto_here_2(o,n);
   return c ? scm_from_utf8_string(c) : SCM_BOOL_F;
 }
 
@@ -297,12 +309,15 @@ SCM_DEFINE(tsn_child_by_field_name, "ts-node-child-by-field-name", 2, 1, 0,
     SCM_ASSERT((scm_c_string_length(name) < scm_to_uint32(length)), length, SCM_ARG3, FUNC_NAME);
   }
   Node *node=FR(o);
-  return make_node(ts_node_child_by_field_name
+  SCM sn=make_node(ts_node_child_by_field_name
                    (node_ref(node),
                     scm_to_utf8_string(name),
                     SCM_UNBNDP(length)
                     ? scm_c_string_length(name)
                     : scm_to_uint32(length)));
+  scm_remember_upto_here_2(o,name);
+  scm_remember_upto_here_1(length);
+  return sn;
 }
 #undef FUNC_NAME
 
@@ -311,6 +326,7 @@ SCM_DEFINE_PUBLIC(tsn_child_by_field_id, "ts-node-child-by-field-id", 2, 0, 0,
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode tsn=ts_node_child_by_field_id(node_ref(node),scm_to_uint16(n));
+  scm_remember_upto_here_2(o,n);
   return make_node(tsn);
 }
 
@@ -322,6 +338,7 @@ SCM_DEFINE(tsn_next_sibling, "ts-node-next-sibling", 1, 1, 0,
   TSNode tsn= scm_is_true(named)
     ? ts_node_next_named_sibling(node_ref(node))
     : ts_node_next_sibling(node_ref(node));
+  scm_remember_upto_here_2(o,named);
   return make_node(tsn);
 }
 SCM_DEFINE(tsn_prev_sibling, "ts-node-prev-sibling", 2, 0, 0,
@@ -331,6 +348,7 @@ SCM_DEFINE(tsn_prev_sibling, "ts-node-prev-sibling", 2, 0, 0,
   TSNode tsn= scm_is_true(named)
     ? ts_node_prev_named_sibling(node_ref(node))
     : ts_node_prev_sibling(node_ref(node));
+  scm_remember_upto_here_2(o,named);
   return make_node(tsn);
 }
 
@@ -342,9 +360,12 @@ SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 1, 0,
   Node *node=FR(o);
   TSNode t_node=node_ref(node);
   uint32_t c_n =scm_to_uint32(n);
-  return make_node(scm_is_true(named)
+  scm_remember_upto_here_1(n);
+  SCM sn=make_node(scm_is_true(named)
                    ? ts_node_first_named_child_for_byte(t_node,c_n)
                    : ts_node_first_child_for_byte(t_node,c_n));
+  scm_remember_upto_here_2(o,named);
+  return sn;
 }
 #undef FUNC_NAME
 
@@ -354,12 +375,16 @@ SCM_DEFINE(tsn_descendant_for_byte_range, "ts-node-descendant-for-byte-range", 3
 {
   ASSERT_TSN(o);
   Node *node=FR(o);
+  scm_remember_upto_here_1(o);
   TSNode t_node=node_ref(node);
   uint32_t c_start =  scm_to_uint32(start);
   uint32_t c_end =  scm_to_uint32(end);
-  return make_node(scm_is_true(named)
+  scm_remember_upto_here_2(start,end);
+  SCM sn=make_node(scm_is_true(named)
                    ? ts_node_named_descendant_for_byte_range(t_node,c_start,c_end)
                    : ts_node_descendant_for_byte_range(t_node,c_start,c_end));
+  scm_remember_upto_here_2(o,named);
+  return sn;
 }
 #undef FUNC_NAME
 
@@ -371,6 +396,7 @@ SCM_DEFINE(tsn_eq, "%ts-node-eq?", 2, 0, 0,
   ASSERT_TSN(o2);
   Node *node=FR(o);
   Node *node2=FR(o2);
+  scm_remember_upto_here_2(o,o2);
   return scm_from_bool(ts_node_eq(node_ref(node), node_ref(node2)));
 }
 
@@ -378,6 +404,7 @@ SCM_DEFINE(tstc_cursor_new, "ts-tree-cursor-new", 1, 0, 0,
            (SCM o), "") {
   ASSERT_TSN(o);
   Node *node=FR(o);
+  scm_remember_upto_here_1(o);
   return make_tcursor(ts_tree_cursor_new(node_ref(node)));
 }
 

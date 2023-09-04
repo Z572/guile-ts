@@ -22,8 +22,8 @@ SCM_DEFINE(tsp_set_logger, "%tsp-set-logger!", 2, 0, 0, (SCM p, SCM proc), "")
   SCM_ASSERT_TYPE((scm_to_bool(scm_procedure_p(proc)) || (scm_is_false(proc))),
                   proc, SCM_ARG2, FUNC_NAME, "procedure or #f");
   TSLogger logger = {.payload = proc, .log = log_call};
-  scm_remember_upto_here_2(p,proc);
   ts_parser_set_logger(FR(p), logger);
+  scm_remember_upto_here_2(p,proc);
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME
@@ -105,14 +105,18 @@ SCM_DEFINE(tsp_set_included_ranges, "%tsp-set-included-ranges!", 2, 0, 0, (SCM o
     ASSERT_TSR(n);
     range[i]=FR(n);
   }
-  return scm_from_bool(ts_parser_set_included_ranges(FR(o),*range,length));
+  scm_remember_upto_here_2(o,list);
+  return scm_from_bool(ts_parser_set_included_ranges(tsp,*range,length));
 }
 #undef FUNC_NAME
 
 SCM_DEFINE(tsp_set_timeout, "%tsp-set-timeout!", 2, 0, 0, (SCM p, SCM timeout),
            "") {
   ASSERT_TSP(p);
-  ts_parser_set_timeout_micros(FR(p), scm_to_uint64(timeout));
+  TSParser *tsp = FR(p);
+  uint64_t to=scm_to_uint64(timeout);
+  scm_remember_upto_here_2(p, timeout);
+  ts_parser_set_timeout_micros(tsp, to);
   return SCM_UNSPECIFIED;
 }
 
@@ -139,12 +143,14 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
     ASSERT_TST(tree);
   };
   char* cstring=scm_to_utf8_string(string);
+  scm_remember_upto_here_1(string);
   uint32_t clength=SCM_UNBNDP(length) ? strlen(cstring) : scm_to_uint32(length);
   if (clength > strlen(cstring)) {
     value_range_error(FUNC_NAME, length,
                       scm_from_uint32(0),
                       scm_from_uint32(strlen(cstring)));
   }
+  scm_remember_upto_here_1(length);
   TSTree *tst =
       ts_parser_parse_string(FR(p), (scm_is_true(tree)) ? (FR(tree)) : NULL,
                              cstring,

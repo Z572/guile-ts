@@ -19,6 +19,7 @@ SCM make_node(TSNode tsn) {
 }
   Node *node=gts_malloc(sizeof(Node));
   node->node=tsn;
+  scm_gc_protect_object(node_tree(tsn));
   return make_foreign_object(tsn_type,node);
 }
 
@@ -28,6 +29,7 @@ SCM node_tree(TSNode tsn) {
 
 static void node_finalizer(SCM o) {
   Node *node=FR(o);
+  scm_gc_unprotect_object(node_tree(node->node));
   gts_free(node);
 }
 

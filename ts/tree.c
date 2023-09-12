@@ -311,12 +311,14 @@ SCM_DEFINE(tsn_child_by_field_name, "ts-node-child-by-field-name", 2, 1, 0,
     SCM_ASSERT((scm_c_string_length(name) < scm_to_uint32(length)), length, SCM_ARG3, FUNC_NAME);
   }
   Node *node=FR(o);
+  char* c_string=scm_to_utf8_string(name);
   SCM sn=make_node(ts_node_child_by_field_name
                    (node_ref(node),
-                    scm_to_utf8_string(name),
+                    c_string,
                     SCM_UNBNDP(length)
                     ? scm_c_string_length(name)
                     : scm_to_uint32(length)));
+  free(c_string);
   scm_remember_upto_here_2(o,name);
   scm_remember_upto_here_1(length);
   return sn;

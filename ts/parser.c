@@ -155,6 +155,7 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
       ts_parser_parse_string(FR(p), (scm_is_true(tree)) ? (FR(tree)) : NULL,
                              cstring,
                              clength);
+  free(cstring);
   SCM s_tst=tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
   scm_remember_upto_here_2(p,tree);
   return s_tst;

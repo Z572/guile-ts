@@ -45,6 +45,7 @@ SCM_DEFINE(query_new, "ts-query-new", 2,0, 0,
                               c_length,
                               &error_offset,
                               &error_type);
+  free(c_string);
   SCM fo= query ? make_foreign_object(query_type, query) : SCM_BOOL_F;
   return query
          ? scm_values_3(fo, SCM_BOOL_F,SCM_BOOL_F)

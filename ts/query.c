@@ -30,7 +30,7 @@ DEFINE_ENUM(TSQuantifierZeroOrMore);
 DEFINE_ENUM(TSQuantifierOne);
 DEFINE_ENUM(TSQuantifierOneOrMore);
 
-SCM_DEFINE(query_new, "ts-query-new", 2,0, 0,
+SCM_DEFINE(query_new, "%ts-query-new", 2,0, 0,
            (SCM language,SCM source),
            "")
 #define FUNC_NAME s_query_new

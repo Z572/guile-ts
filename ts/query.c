@@ -38,14 +38,16 @@ SCM_DEFINE(query_new, "%ts-query-new", 2,0, 0,
   ASSERT_TSL(language);
   uint32_t error_offset;
   TSQueryError error_type;
+  scm_dynwind_begin(0);
   char* c_string=scm_to_utf8_string(source);
+  scm_dynwind_free(c_string);
   uint32_t c_length=strlen(c_string);
   TSQuery *query=ts_query_new(foreign_object_ref(language),
                               c_string,
                               c_length,
                               &error_offset,
                               &error_type);
-  free(c_string);
+  scm_dynwind_end();
   SCM fo= query ? make_foreign_object(query_type, query) : SCM_BOOL_F;
   return query
          ? scm_values_3(fo, SCM_BOOL_F,SCM_BOOL_F)

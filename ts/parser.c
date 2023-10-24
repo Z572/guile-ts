@@ -142,8 +142,10 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
   if (scm_is_true(tree)) {
     ASSERT_TST(tree);
   };
+  scm_dynwind_begin(0);
   char* cstring=scm_to_utf8_string(string);
   scm_remember_upto_here_1(string);
+  scm_dynwind_free(cstring);
   uint32_t clength=SCM_UNBNDP(length) ? strlen(cstring) : scm_to_uint32(length);
   if (clength > strlen(cstring)) {
     value_range_error(FUNC_NAME, length,
@@ -155,8 +157,8 @@ SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
       ts_parser_parse_string(FR(p), (scm_is_true(tree)) ? (FR(tree)) : NULL,
                              cstring,
                              clength);
-  free(cstring);
   SCM s_tst=tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
+  scm_dynwind_end();
   scm_remember_upto_here_2(p,tree);
   return s_tst;
 }

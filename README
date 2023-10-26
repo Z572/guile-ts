@@ -1,6 +1,18 @@
 # -*- mode: org; -*-
 #+title: guile + tree-sitter
 
-requirement: guile3, tree-sitter,pkg-config, autoconf ,automake,libtool.
+* requirement:
 
-Is a wip project.
+- guile 3.0
+- tree-sitter
+- pkg-config
+- autoconf
+- automake
+- libtool
+- texinfo.
+
+* current state:
+- Poor documentation :: you can see tests/ directory for how to use.
+- Some tree-sitter C apis is miss.
+- Some apis are not friendly.
+- No cross-compile support.

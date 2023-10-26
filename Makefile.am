@@ -61,3 +61,4 @@ $(TESTS): tests/tree-sitter-json.so
 tests/tree-sitter-json.so: tests/tree-sitter-json.c
 	-$(MKDIR_P) $(top_builddir)/tests
 	$(CC) $(TREE_SITTER_CFLAGS) -fPIC -shared $< -o $@
+dvi:

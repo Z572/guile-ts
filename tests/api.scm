@@ -286,3 +286,9 @@
             (ts-parser-parse-string parser #f source)
             (call-with-input-file (port-filename port) get-string-all))
           (lambda () (delete-file (port-filename port))))))))
+
+(test-group "util"
+  (let ((str "conf='…'\n"))
+    (test-equal "substring-utf8"
+      str
+      (substring-utf8 str 0 (string-utf8-length str)))))

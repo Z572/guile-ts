@@ -6,7 +6,25 @@
   #:use-module (system foreign)
   #:use-module (system foreign-library)
   #:use-module (system foreign-object)
-  #:export (<ts-range>))
+  #:use-module (ice-9 iconv)
+  #:use-module (ice-9 textual-ports)
+  #:use-module (rnrs bytevectors gnu)
+  #:export (<ts-range>
+            substring-utf8))
+
+(define* (substring-utf8 str start #:optional end)
+  "Guile's substring is no support utf-8, but tree-sitter returns location is
+utf-8 base.
+e.g.
+(substring \"conf='…'\\n\" 5 10) will error.
+(substring-utf8 \"conf='…'\\n\" 5 10) is normal.
+"
+  (let ((bv (string->bytevector str "utf-8")))
+    (bytevector->string
+     (if end
+         (bytevector-slice bv start (- end start))
+         (bytevector-slice bv start))
+     "utf-8")))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_util"))

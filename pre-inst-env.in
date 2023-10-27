@@ -10,5 +10,6 @@ LTDL_LIBRARY_PATH="$abs_top_builddir/.libs/"
 export LTDL_LIBRARY_PATH
 PATH="$abs_top_builddir/scripts:$abs_top_builddir:$PATH"
 export PATH
-
+TREE_SITTER_GRAMMAR_PATH="$abs_top_builddir/tests"
+export TREE_SITTER_GRAMMAR_PATH
 exec "$@"

@@ -7,8 +7,7 @@
 (test-group "ts-query"
   (let* ((ts-json
           (get-ts-language-from-file
-           (string-append (getenv "abs_top_builddir")
-                          "/tests/tree-sitter-json.so")
+           "tree-sitter-json"
            "tree_sitter_json"))
          (source "[1]"))
     (let ((q (ts-query-new ts-json "(document)")))

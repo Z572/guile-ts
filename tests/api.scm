@@ -34,8 +34,7 @@
   (define json-language #f)
   (test-assert "load language from so"
     (let ((o (get-ts-language-from-file
-              (string-append (getenv "abs_top_builddir")
-                             "/tests/tree-sitter-json.so")
+              "tree-sitter-json"
               "tree_sitter_json")))
       (set! json-language o)
       o))

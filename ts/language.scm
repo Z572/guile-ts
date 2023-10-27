@@ -16,5 +16,9 @@
   (load-extension "libguile_ts" "init_ts_language"))
 
 (define (get-ts-language-from-file lib name)
-  (let ((o (foreign-library-function lib name #:return-type '*)))
-    (and o (%rf <ts-language> (o)))))
+  (parameterize ((ltdl-library-path
+                  (append
+                   (parse-path (getenv "TREE_SITTER_GRAMMAR_PATH"))
+                   (ltdl-library-path))))
+    (let ((o (foreign-library-function lib name #:return-type '*)))
+      (and o (%rf <ts-language> (o))))))

@@ -8,8 +8,7 @@
          (parser (make <ts-parser>
                    #:language
                    (get-ts-language-from-file
-                    (string-append (getenv "abs_top_builddir")
-                                   "/tests/tree-sitter-json.so")
+                    "tree-sitter-json"
                     "tree_sitter_json")))
          (tree (ts-parser-parse-string parser #f source))
          (root (ts-tree-root-node tree))

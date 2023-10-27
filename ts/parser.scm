@@ -57,6 +57,18 @@
                  `(#:include-ranges ,include-ranges)
                  '()))))
 
+(define ts-parser-parse-string
+  (case-lambda
+    "Returns a <ts-tree> object, @var{old-tree} need @var{<ts-tree>} or
+@var{#f}, @var{string} is expect you source code.
+"
+    ((parser string)
+     (%ts-parser-parse-string parser #f string))
+    ((parser old-tree string)
+     (%ts-parser-parse-string parser old-tree string))
+    ((parser old-tree string length)
+     (%ts-parser-parse-string parser old-tree string length))))
+
 (define (ts-parser-print-dot-graphs parser fd-or-port)
   (let ((fd (if (port? fd-or-port)
                 (port->fdes fd-or-port)

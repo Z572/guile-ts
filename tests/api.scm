@@ -55,9 +55,18 @@
               #t
               (ts-language-field-name-for-id json-language 30))
 
-  (let* ((parser (make <ts-parser> #:language json-language))
-         (tree (ts-parser-parse-string parser #f "[1,null]")))
-    (test-assert "parse string"
+
+  (test-assert "ts-parser-parse-string: 2 arg"
+    (let* ((parser (make <ts-parser> #:language json-language))
+           (tree (ts-parser-parse-string parser "[1,null]")))
+      (ts-tree? tree)))
+  (test-assert "ts-parser-parse-string: 3 arg"
+    (let* ((parser (make <ts-parser> #:language json-language))
+           (tree (ts-parser-parse-string parser #f "[1,null]")))
+      (ts-tree? tree)))
+  (test-assert "ts-parser-parse-string: 4 arg"
+    (let* ((parser (make <ts-parser> #:language json-language))
+           (tree (ts-parser-parse-string parser #f "[1,null]" 3)))
       (ts-tree? tree)))
 
   (let* ((parser (make <ts-parser> #:language json-language)))

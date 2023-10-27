@@ -134,7 +134,7 @@ SCM_DEFINE(tsp_reset, "ts-parser-reset!", 1, 0, 0, (SCM p), "") {
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE(tsp_parse_string, "ts-parser-parse-string", 3, 1, 0,
+SCM_DEFINE(tsp_parse_string, "%ts-parser-parse-string", 3, 1, 0,
            (SCM p, SCM tree, SCM string, SCM length), "")
 #define FUNC_NAME s_tsp_parse_string
 {

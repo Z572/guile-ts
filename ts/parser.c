@@ -5,9 +5,14 @@
 #include "foreign.h"
 #include "util.h"
 
-static void ts_parser_finalizer(SCM scm) { ts_parser_delete(FR(scm)); }
-
-DEFINE_FOREGE_TYPE(tsp_type,"<%ts-parser>",NULL,ts_parser_finalizer);
+SCM_DEFINE(tsp_delete, "%tsp-delete!", 1, 0, 0, (SCM p), "")
+#define FUNC_NAME s_tsp_delete
+{
+  TSParser *parser=scm_to_pointer(p);
+  ts_parser_delete(parser);
+  return SCM_UNSPECIFIED;
+}
+#undef FUNC_NAME
 
 inline static void log_call(void *payload, TSLogType logtype, const char *string) {
   SCM proc=payload;
@@ -73,7 +78,7 @@ SCM_DEFINE(tsp_language, "%tsp-language", 1, 0, 0, (SCM o), "") {
   TSParser *tsp = FR(o);
   scm_remember_upto_here_1(o);
   const TSLanguage *tsl = ts_parser_language(tsp);
-  return tsl ? make_foreign_object(tsl_type, tsl) : SCM_BOOL_F;
+  return tsl ? make_foreign_object(scm_c_private_ref("ts language", "<ts-language>"), tsl) : SCM_BOOL_F;
 }
 
 SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
@@ -157,7 +162,7 @@ SCM_DEFINE(tsp_parse_string, "%ts-parser-parse-string", 3, 1, 0,
       ts_parser_parse_string(FR(p), (scm_is_true(tree)) ? (FR(tree)) : NULL,
                              cstring,
                              clength);
-  SCM s_tst=tst ? make_foreign_object(tst_type, tst) : SCM_BOOL_F;
+  SCM s_tst=tst ? make_foreign_object(scm_c_private_ref("ts tree", "<ts-tree>"), tst) : SCM_BOOL_F;
   scm_dynwind_end();
   scm_remember_upto_here_2(p,tree);
   return s_tst;

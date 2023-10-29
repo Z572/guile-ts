@@ -3,19 +3,13 @@
 #include <string.h>
 #include "foreign.h"
 #include "util.h"
+#define query_type scm_c_private_ref("ts query", "<ts-query>")
+#define query_cursor_type scm_c_private_ref("ts query", "<ts-query-cursor>")
 #define ASSERT_QUERY(o) scm_assert_foreign_object_type(query_type, o)
 #define ASSERT_QC(o) scm_assert_foreign_object_type(query_cursor_type, o)
-static void query_finalizer(SCM q) {
-  TSQuery *query=foreign_object_ref(q);
-  ts_query_delete(query);
-}
-static void qc_finalizer(SCM qc) {
-  TSQueryCursor *c=foreign_object_ref(qc);
-  ts_query_cursor_delete(c);
-}
 
-DEFINE_FOREGE_TYPE(query_type,"<ts-query>",NULL,query_finalizer);
-DEFINE_FOREGE_TYPE(query_cursor_type,"<ts-query-cursor>",NULL,qc_finalizer);
+
+
 DEFINE_ENUM(TSQueryErrorNone);
 DEFINE_ENUM(TSQueryErrorSyntax);
 DEFINE_ENUM(TSQueryErrorNodeType);
@@ -29,6 +23,18 @@ DEFINE_ENUM(TSQuantifierZeroOrOne);
 DEFINE_ENUM(TSQuantifierZeroOrMore);
 DEFINE_ENUM(TSQuantifierOne);
 DEFINE_ENUM(TSQuantifierOneOrMore);
+
+SCM_DEFINE(query_delete,"%ts_query_delete",1,0,0,(SCM p),""){
+  TSQuery *tsq=scm_to_pointer(p);
+  ts_query_delete(tsq);
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE(query_cursor_delete,"%ts_query_cursor_delete",1,0,0,(SCM p),""){
+  TSQueryCursor *tsq=scm_to_pointer(p);
+  ts_query_cursor_delete(tsq);
+  return SCM_UNSPECIFIED;
+}
 
 SCM_DEFINE(query_new, "%ts-query-new", 2,0, 0,
            (SCM language,SCM source),

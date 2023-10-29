@@ -12,6 +12,10 @@
             ts-language-field-name-for-id
             ts-language-version))
 
+(define <ts-language>
+  (make-foreign-object-type
+   '<ts-language> '(%data)))
+
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_language"))
 
@@ -21,4 +25,4 @@
                    (parse-path (getenv "TREE_SITTER_GRAMMAR_PATH"))
                    (ltdl-library-path))))
     (let ((o (foreign-library-function lib name #:return-type '*)))
-      (and o (%rf <ts-language> (o))))))
+      (and o (find-or-create-fobject <ts-language> (o))))))

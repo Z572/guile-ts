@@ -5,15 +5,9 @@
 #include "foreign.h"
 #include "util.h"
 
-DEFINE_FOREGE_TYPE(tsl_type,"<ts-language>",NULL,NULL);
 DEFINE_ENUM(TSSymbolTypeRegular);
 DEFINE_ENUM(TSSymbolTypeAnonymous);
 DEFINE_ENUM(TSSymbolTypeAuxiliary);
-
-SCM_DEFINE(ref_or_set, "%rf", 2, 0, 0, (SCM type,SCM point),
-           "") {
-  return make_foreign_object(type,scm_to_pointer(point));
-}
 
 SCM_DEFINE(tsl_field_count, "ts-language-field-count", 1, 0, 0,
            (SCM o), "") {

@@ -2,6 +2,8 @@
   #:use-module (ts init)
   #:use-module (ts util)
   #:use-module (ts language)
+  #:use-module (system foreign-object)
+  #:use-module ((system foreign) #:select (make-pointer))
   #:use-module (oop goops)
   #:use-module (srfi srfi-171)
   #:use-module (srfi srfi-71)
@@ -39,6 +41,24 @@
   (source ts-query-syntax-error-source)
   (offset ts-query-syntax-error-offset)
   (type ts-query-syntax-error-type))
+
+(define (%ts-query-delete obj)
+  (let ((%data (slot-ref obj '%data)))
+    (%ts_query_delete (make-pointer %data))))
+
+(define (%ts-query-cursor-delete obj)
+  (let ((%data (slot-ref obj '%data)))
+    (%ts_query_cursor_delete (make-pointer %data))))
+
+(define <ts-query>
+  (make-foreign-object-type
+   '<ts-query> '(%data)
+   #:finalizer %ts-query-delete))
+
+(define <ts-query-cursor>
+  (make-foreign-object-type
+   '<ts-query-cursor> '(%data)
+   #:finalizer %ts-query-cursor-delete))
 
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_query"))

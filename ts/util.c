@@ -15,10 +15,6 @@ value_range_error (const char* subr, SCM bad_val, SCM min, SCM max)
              scm_list_1 (bad_val));
 }
 
-extern SCM type_table ;
-
-
-DEFINE_FOREGE_TYPE(tsr_type,"<%ts-range>",NULL,NULL);
 DEFINE_ENUM(TSSymbolTypeRegular);
 DEFINE_ENUM(TSSymbolTypeAnonymous);
 DEFINE_ENUM(TSSymbolTypeAuxiliary);
@@ -80,8 +76,6 @@ SCM_DEFINE(tsr_set_end_byte, "%tsr-set-end-byte!", 2, 0, 0, (SCM r,SCM o),
 }
 
 void init_ts_util() {
-  type_table=scm_make_weak_value_hash_table(scm_from_int(3000));
-
 #ifndef SCM_MAGIC_SNARFER
 #include "util.x"
 #endif

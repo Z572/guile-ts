@@ -29,6 +29,10 @@ e.g.
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_util"))
 
+(define <%ts-range>
+  (make-foreign-object-type
+   '<%ts-range> '(%data)))
+
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual
                #:slot-ref %tsr-start-point

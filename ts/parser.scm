@@ -1,4 +1,5 @@
 (define-module (ts parser)
+  #:use-module (ts init)
   #:use-module (oop goops)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-26)
@@ -18,6 +19,14 @@
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_parser"))
 
+(define (tsp-delete! o)
+  (let ((%data (slot-ref o '%data)))
+    (%tsp-delete! (make-pointer %data))))
+
+(define <%ts-parser>
+  (make-foreign-object-type
+   '<%ts-parser> '(%data)
+   #:finalizer tsp-delete!))
 (define-class <ts-parser> (<%ts-parser>)
   (language #:allocation #:virtual
             #:slot-ref %tsp-language
@@ -37,7 +46,8 @@
   (logger #:allocation #:virtual
           #:slot-ref %tsp-logger
           #:slot-set! %tsp-set-logger!
-          #:accessor ts-parser-logger))
+          #:accessor ts-parser-logger)
+  #:finalizer tsp-delete!)
 
 (define-method (initialize (obj <ts-parser>) initarg)
   (next-method obj (cons* #:%data (pointer-address (%tsp-new)) initarg)))

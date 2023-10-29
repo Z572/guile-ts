@@ -46,6 +46,31 @@
             ts-tree-edit
             ts-tree-get-changed-ranges))
 
+(define (%tcursor-finalizer o)
+  (let ((%data (slot-ref o '%data)))
+    (%tcursor_finalizer (make-pointer %data))))
+
+(define (%ts-tree-delete! o)
+  (let ((%data (slot-ref o '%data)))
+    (%ts_tree_delete (make-pointer %data))))
+
+(define (%node-finalizer o)
+  (let ((%data (slot-ref o '%data)))
+    (%node_finalizer (make-pointer %data))))
+
+(define <ts-node>
+  (make-foreign-object-type
+   '<ts-node> '(%data)
+   #:finalizer %node-finalizer))
+(define <ts-tree>
+  (make-foreign-object-type
+   '<ts-tree> '(%data)
+   #:finalizer %ts-tree-delete!))
+(define <ts-tree-cursor>
+  (make-foreign-object-type
+   '<ts-tree-cursor> '(%data)
+   #:finalizer %tcursor-finalizer))
+
 (eval-when (expand load eval)
   (load-extension "libguile_ts" "init_ts_tree"))
 

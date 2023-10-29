@@ -8,7 +8,6 @@ libguile_ts_la_SOURCES= \
 	ts/init.h		\
 	ts/language.c	\
 	ts/foreign.h	\
-	ts/foreign.c	\
 	ts/query.c		\
 	ts/tree.c		\
 	ts/parser.c

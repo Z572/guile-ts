@@ -259,7 +259,6 @@ SCM_DEFINE(tsn_parent, "ts-node-parent", 1, 0, 0, (SCM o), "")
   ASSERT_TSN(o);
   Node *node=FR(o);
   TSNode tsn=node_ref(node);
-  TSNode root_node=ts_tree_root_node(node_ref(node).tree);
   scm_remember_upto_here(o);
   return make_node(ts_node_parent(tsn));
 }

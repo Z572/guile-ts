@@ -173,6 +173,10 @@
       (ts-node-parent
        (ts-tree-root-node
         (ts-parser-parse-string parser #f "[1,null]"))))
+    (test-equal "ts-node-parent"
+      root
+      (let ((child (ts-node-child root 0)))
+        (ts-node-parent child)))
 
     (test-equal "ts-node-sexp"
       '(document (array (number) (null)))

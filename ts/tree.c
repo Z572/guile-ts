@@ -384,7 +384,7 @@ SCM_DEFINE(tsn_descendant_for_byte_range, "ts-node-descendant-for-byte-range", 3
   uint32_t c_start =  scm_to_uint32(start);
   uint32_t c_end =  scm_to_uint32(end);
   scm_remember_upto_here_2(start,end);
-  SCM sn=make_node(scm_is_true(named)
+  SCM sn=make_node((SCM_UNBNDP(named) ? false :scm_to_bool(named))
                    ? ts_node_named_descendant_for_byte_range(t_node,c_start,c_end)
                    : ts_node_descendant_for_byte_range(t_node,c_start,c_end));
   scm_remember_upto_here_2(o,named);

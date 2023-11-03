@@ -263,11 +263,11 @@
 
     (test-equal "ts-node-descendant-for-byte-range"
       (ts-node-child root 0)
-      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 1))
+      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 2))
 
     (test-equal "ts-node-descendant-for-byte-range: named"
       (ts-node-child root 0 #t)
-      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 1 #t)))
+      (ts-node-descendant-for-byte-range (ts-node-child root 0) 0 2 #t)))
   (let* ((source "[1")
          (parser (make <ts-parser>
                    #:language json-language))

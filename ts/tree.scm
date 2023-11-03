@@ -105,6 +105,7 @@
    (list start old-end new-end
          start-point old-end-point new-end-point)))
 
+;; node
 (define-method (ts-node-sexp (node <ts-node>))
   (call-with-input-string (ts-node-string node) read))
 
@@ -114,10 +115,6 @@
 (define (ts-tree? t)
   (is-a? t <ts-tree>))
 
-(define-method (ts-node-childs (node <ts-node>))
-  (map (cut ts-node-child node <> #f)
-       (iota (ts-node-child-count node #f))))
-
-(define-method (ts-node-childs (node <ts-node>) named)
-  (map (cut ts-node-child node <> named)
-       (iota (ts-node-child-count node named))))
+(define* (ts-node-childs node #:optional (named? #f))
+  (map (cut ts-node-child node <> named?)
+       (iota (ts-node-child-count node named?))))

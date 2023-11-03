@@ -14,6 +14,8 @@ Returns a @var{<ts-parser>} object, keywords alive value is language timeout inc
 @end lisp
 @end deffn
 
-@deffn {Scheme Procedure} ts-parser-parse-string parser old-tree string #:optional length
+@deffn  {Scheme Procedure} ts-parser-parse-string parser old-tree string length
+@deffnx {Scheme Procedure} ts-parser-parse-string parser old-tree string
+@deffnx {Scheme Procedure} ts-parser-parse-string parser string
 Returns a <ts-tree> object, @var{old-tree} need @var{<ts-tree>} or @var{#f}, @var{string} is expect you source code
 @end deffn

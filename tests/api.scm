@@ -230,9 +230,13 @@
     (test-equal "ts-node-end-point"
       (cons 0 (string-length source)) (ts-node-end-point root))
 
+    (test-equal "ts-node-first-child-for-byte"
+      (ts-node-child (ts-node-child root 0) 0)
+      (ts-node-first-child-for-byte (ts-node-child root 0) 0))
+
     (test-equal "ts-node-first-child-for-byte: named"
-      (ts-node-child root 0)
-      (ts-node-first-child-for-byte root 0 #t))
+      (ts-node-child (ts-node-child root 0) 0 #t)
+      (ts-node-first-child-for-byte (ts-node-child root 0) 0 #t))
     (test-assert "ts-node-first-child-for-byte: > length"
       (not (ts-node-first-child-for-byte root (string-length source) #t)))
     (test-error

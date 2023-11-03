@@ -365,7 +365,7 @@ SCM_DEFINE(tsn_first_child_for_byte, "ts-node-first-child-for-byte", 2, 1, 0,
   TSNode t_node=node_ref(node);
   uint32_t c_n =scm_to_uint32(n);
   scm_remember_upto_here_1(n);
-  SCM sn=make_node(scm_is_true(named)
+  SCM sn=make_node((SCM_UNBNDP(named) ? false : scm_to_bool(named))
                    ? ts_node_first_named_child_for_byte(t_node,c_n)
                    : ts_node_first_child_for_byte(t_node,c_n));
   scm_remember_upto_here_2(o,named);

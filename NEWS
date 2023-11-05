@@ -1,0 +1,15 @@
+                             -*- org -*-
+#+TITLE: Guile-TS NEWS
+
+Copyright (C) 2023 Zheng Junjie <873216071@qq.com>
+
+* Changes in 0.2.0 (since 0.1.0)
+** New Functionality
+*** substring-utf8: new procedure.
+** Change
+*** ts-parser-parse-string: Supports two arguments.
+*** get-ts-language-from-file support TREE_SITTER_GRAMMAR_PATH environment variable.
+*** ts-node-childs: change from goop's method to procedure.
+** Bug fixes
+*** some object will correct run the finalizer.
+*** ts-node-{first-child-for-byte,descendant-for-byte-range}: fix no provide named case

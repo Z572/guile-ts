@@ -47,6 +47,7 @@ SCM_DEFINE(tcursor_finalizer,"%tcursor_finalizer",1,0,0,(SCM p),""){
   Tcursor *tc = scm_to_pointer(p);
   ts_tree_cursor_delete(&tc->cursor);
   gts_free(tc);
+  return SCM_UNSPECIFIED;
 }
 
 #define ASSERT_TSTC(o)                                 \

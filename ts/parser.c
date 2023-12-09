@@ -169,6 +169,48 @@ SCM_DEFINE(tsp_parse_string, "%ts-parser-parse-string", 3, 1, 0,
 }
 #undef FUNC_NAME
 
+const char *parser_read(void *payload, uint32_t byte_index, TSPoint position,
+                        uint32_t *bytes_read) {
+  SCM proc_and_obj = payload;
+  SCM proc = scm_car(proc_and_obj);
+  SCM obj = scm_cdr(proc_and_obj);
+  SCM out = scm_call_3(proc, obj, scm_from_uint32(byte_index),
+                       point_to_cons(position));
+  if (scm_is_false(out)) {
+    *bytes_read = 0;
+    return NULL;
+  }
+
+  *bytes_read = scm_c_string_utf8_length(out);
+  return scm_to_utf8_string(out);
+}
+
+SCM_DEFINE(tsp_parse_parse, "%ts-parser-parse", 4, 0, 0,
+           (SCM p, SCM tree, SCM object, SCM procedure), "")
+#define FUNC_NAME s_tsp_parse
+{
+  ASSERT_TSP(p);
+  if (scm_is_true(tree)) {
+    ASSERT_TST(tree);
+  };
+  scm_gc_protect_object(procedure);
+  scm_gc_protect_object(object);
+  TSInput input = {.payload = scm_cons(procedure, object),
+                   .read = parser_read,
+                   .encoding = TSInputEncodingUTF8};
+  TSTree *new_tree =
+      ts_parser_parse(FR(p), (scm_is_true(tree)) ? (FR(tree)) : NULL, input);
+  scm_gc_unprotect_object(object);
+  scm_gc_unprotect_object(procedure);
+
+  scm_remember_upto_here_2(p, tree);
+
+  return new_tree ? make_foreign_object(
+                        scm_c_private_ref("ts tree", "<ts-tree>"), new_tree)
+                  : SCM_BOOL_F;
+}
+#undef FUNC_NAME
+
 void init_ts_parser() {
 #ifndef SCM_MAGIC_SNARFER
 #include "parser.x"

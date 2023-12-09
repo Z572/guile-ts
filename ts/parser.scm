@@ -11,6 +11,7 @@
             ts-parser-language
             ts-parser-new
             ts-parser-parse-string
+            ts-parser-parse
             ts-parser-reset!
             ts-parser-timeout
             ts-parser-logger
@@ -78,6 +79,13 @@
      (%ts-parser-parse-string parser old-tree string))
     ((parser old-tree string length)
      (%ts-parser-parse-string parser old-tree string length))))
+
+(define ts-parser-parse
+  (case-lambda
+    ((parser object proc)
+     (%ts-parser-parse parser #f object proc))
+    ((parser old-tree object proc)
+     (%ts-parser-parse parser old-tree object proc))))
 
 (define (ts-parser-print-dot-graphs parser fd-or-port)
   (let ((fd (if (port? fd-or-port)

@@ -68,6 +68,34 @@
            (tree (ts-parser-parse-string parser #f "[1,null]" 3)))
       (ts-tree? tree)))
 
+  (test-assert "ts-parser-parse"
+    (let* ((parser (make <ts-parser> #:language json-language))
+           (tree (call-with-input-string "[1,\nnull]"
+                   (lambda (port)
+                     (ts-parser-parse
+                      parser
+                      port
+                      (lambda (object index position)
+                        (let ((o (get-string-n object 1)))
+                          (if (eof-object? o)
+                              #f
+                              o))))))))
+      (ts-tree? tree)))
+
+  (test-error
+   "ts-parser-parse: no #f"
+   'wrong-type-arg
+   (call-with-input-string "[1,\nnull]"
+     (lambda (port)
+       (ts-parser-parse
+        (make <ts-parser> #:language json-language)
+        port
+        (lambda (object index position)
+          (let ((o (get-string-n object 1)))
+            (if (eof-object? o)
+                1
+                o)))))))
+
   (let* ((parser (make <ts-parser> #:language json-language)))
     (test-error "ts-parser-parse-string: out of lenght"
                 'out-of-range

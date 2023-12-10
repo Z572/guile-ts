@@ -205,8 +205,8 @@ SCM_DEFINE(query_predicates_for_pattern, "%ts-query-predicates-for-pattern", 2,
   SCM list=scm_make_list(scm_from_uint32(length), SCM_UNSPECIFIED);
   for (unsigned i = 0; i < length; i++) {
     const TSQueryPredicateStep *step=&tsq_ps[i];
-    SCM sym;
-    SCM value;
+    SCM sym = SCM_UNSPECIFIED;
+    SCM value = SCM_UNSPECIFIED;
     switch (step->type) {
     case TSQueryPredicateStepTypeString:
       sym = scm_from_utf8_symbol("string");
@@ -244,8 +244,6 @@ SCM_DEFINE(query_cursor_new, "ts-query-cursor-new", 0,0, 0,
            "")
 #define FUNC_NAME s_query_cursor_new
 {
-  uint32_t error_offset;
-  TSQueryError error_type;
   SCM qc=make_foreign_object(query_cursor_type, ts_query_cursor_new());
   return qc;
 }

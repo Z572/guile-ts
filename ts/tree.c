@@ -24,7 +24,7 @@ SCM make_node(TSNode tsn) {
 }
 
 SCM node_tree(TSNode tsn) {
-  return make_foreign_object(scm_c_private_ref("ts tree", "<ts-tree>"), tsn.tree);
+  return make_foreign_object(scm_c_private_ref("ts tree", "<ts-tree>"), (void *)(tsn.tree));
 }
 
 typedef struct {
@@ -75,7 +75,8 @@ SCM_DEFINE(tst_language, "ts-tree-language", 1, 0, 0, (SCM o), "")
 {
   ASSERT_TST(o);
   TSTree *tst = FR(o);
-  SCM l=make_foreign_object(scm_c_private_ref("ts language", "<ts-language>"), ts_tree_language(tst));
+  SCM l=make_foreign_object(scm_c_private_ref("ts language", "<ts-language>"),
+                            (void *)(ts_tree_language(tst)));
   scm_remember_upto_here_1(o);
   return l;
 }
@@ -98,7 +99,6 @@ SCM_DEFINE(tst_root_node_with_offset, "%ts-tree-root-node-with-offset", 3, 0, 0,
 {
   ASSERT_TST(o);
   TSTree *tst = FR(o);
-  SCM node;
   scm_remember_upto_here_1(o);
   return make_node(ts_tree_root_node_with_offset(tst, scm_to_uint32(offset),
                                                  cons_to_point(point)));
@@ -111,7 +111,6 @@ SCM_DEFINE(tst_edit, "%ts-tree-edit", 2, 0, 0,
 {
   ASSERT_TST(o);
   TSTree *tst = FR(o);
-  SCM node;
   const TSInputEdit tsie = {
     .start_byte=scm_to_uint32(scm_list_ref(edit, scm_from_uint(0))),
     .old_end_byte=scm_to_uint32(scm_list_ref(edit, scm_from_uint(1))),

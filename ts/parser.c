@@ -78,7 +78,7 @@ SCM_DEFINE(tsp_language, "%tsp-language", 1, 0, 0, (SCM o), "") {
   TSParser *tsp = FR(o);
   scm_remember_upto_here_1(o);
   const TSLanguage *tsl = ts_parser_language(tsp);
-  return tsl ? make_foreign_object(scm_c_private_ref("ts language", "<ts-language>"), tsl) : SCM_BOOL_F;
+  return tsl ? make_foreign_object(scm_c_private_ref("ts language", "<ts-language>"), (void *)tsl) : SCM_BOOL_F;
 }
 
 SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
@@ -86,12 +86,12 @@ SCM_DEFINE(tsp_included_ranges, "%tsp-included-ranges", 1, 0, 0, (SCM o),
   ASSERT_TSP(o);
   TSParser *tsp = FR(o);
   uint32_t length;
-  TSRange *range=ts_parser_included_ranges(tsp, &length);
+  const TSRange *range=ts_parser_included_ranges(tsp, &length);
   scm_remember_upto_here_1(o);
   SCM list=scm_make_list(scm_from_uint8(length), SCM_UNSPECIFIED);
   for (unsigned i = 0; i < length; i++) {
-    TSRange *r=&range[i];
-    scm_list_set_x(list,scm_from_unsigned_integer(i), make_range(r));
+    const TSRange *r=&range[i];
+    scm_list_set_x(list,scm_from_unsigned_integer(i), make_range((TSRange *)r));
   }
   return list;
 }

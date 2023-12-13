@@ -18,7 +18,18 @@
             ts-parser-print-dot-graphs))
 
 (eval-when (expand load eval)
-  (load-extension "libguile_ts" "init_ts_parser"))
+  (if (getenv "GUILE_TS_CROSS_COMPILING")
+      (for-each (lambda (x)
+                  (module-define! (current-module) x identity))
+                '(%tsp-language
+                  %tsp-set-language!
+                  %tsp-timeout
+                  %tsp-set-timeout!
+                  %tsp-included-ranges
+                  %tsp-set-included-ranges!
+                  %tsp-logger
+                  %tsp-set-logger!))
+      (load-extension "libguile_ts" "init_ts_parser")))
 
 (define (tsp-delete! o)
   (let ((%data (slot-ref o '%data)))

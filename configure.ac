@@ -27,6 +27,8 @@ GUILE_PKG([3.0])
 GUILE_PROGS
 GUILE_SITE_DIR
 
+AM_CONDITIONAL([CROSS_COMPILING], [test "x$cross_compiling" = "xyes"])
+
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.

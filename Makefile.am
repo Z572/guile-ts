@@ -20,7 +20,8 @@ BUILT_SOURCES= $(filter %.x, $(libguile_ts_la_SOURCES:%.c=%.x))
 moddir=$(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)
 godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 .scm.go:
-	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET) $(GUILE_WARNINGS) -o "$@" "$<"
+	$(AM_V_GEN) $(CROSS_COMPILING_VARIABLE) $(top_builddir)/pre-inst-env \
+	$(GUILE_TOOLS) compile --target=$(host) $(GUILE_TARGET) $(GUILE_WARNINGS) -o "$@" "$<"
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(libguile_ts_la_CFLAGS)
 EXTRA_DIST = $(SOURCES) $(TESTS) build-aux/test-driver.scm
@@ -34,6 +35,12 @@ GUILE_WARNINGS =                                          \
 
 GOBJECTS = $(SOURCES:%.scm=%.go)
 CLEANFILES = $(GOBJECTS) $(TESTS:tests/%.scm=%.log) $(BUILT_SOURCES)
+
+if CROSS_COMPILING
+CROSS_COMPILING_VARIABLE = GUILE_TS_CROSS_COMPILING=yes
+else
+CROSS_COMPILING_VARIABLE =
+endif
 
 nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES) $(NODIST_SOURCES)
 nobase_go_DATA = $(GOBJECTS)

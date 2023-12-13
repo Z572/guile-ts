@@ -26,12 +26,23 @@ e.g.
          (bytevector-slice bv start))
      "utf-8")))
 
-(eval-when (expand load eval)
-  (load-extension "libguile_ts" "init_ts_util"))
-
 (define <%ts-range>
   (make-foreign-object-type
    '<%ts-range> '(%data)))
+
+(eval-when (expand load eval)
+  (if (getenv "GUILE_TS_CROSS_COMPILING")
+      (for-each (lambda (x)
+                  (module-define! (current-module) x identity))
+                '(%tsr-start-point
+                  %tsr-end-point
+                  %tsr-end-byte
+                  %tsr-start-byte
+                  %tsr-set-start-point!
+                  %tsr-set-end-point!
+                  %tsr-set-start-byte!
+                  %tsr-set-end-byte!))
+      (load-extension "libguile_ts" "init_ts_util")))
 
 (define-class <ts-range> (<%ts-range>)
   (start-point #:allocation #:virtual

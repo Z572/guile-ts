@@ -17,7 +17,8 @@
    '<ts-language> '(%data)))
 
 (eval-when (expand load eval)
-  (load-extension "libguile_ts" "init_ts_language"))
+  (unless (getenv "GUILE_TS_CROSS_COMPILING")
+    (load-extension "libguile_ts" "init_ts_language")))
 
 (define (get-ts-language-from-file lib name)
   (parameterize ((ltdl-library-path

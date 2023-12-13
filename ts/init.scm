@@ -17,4 +17,5 @@
           new-obj))))
 
 (eval-when (expand load eval)
-  (load-extension "libguile_ts" "init_ts"))
+  (unless (getenv "GUILE_TS_CROSS_COMPILING")
+    (load-extension "libguile_ts" "init_ts")))

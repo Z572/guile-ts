@@ -72,7 +72,8 @@
    #:finalizer %tcursor-finalizer))
 
 (eval-when (expand load eval)
-  (load-extension "libguile_ts" "init_ts_tree"))
+  (unless (getenv "GUILE_TS_CROSS_COMPILING")
+    (load-extension "libguile_ts" "init_ts_tree")))
 
 (define-method (equal? (node1 <ts-node>) (node2 <ts-node>))
   (%ts-node-eq? node1 node2))

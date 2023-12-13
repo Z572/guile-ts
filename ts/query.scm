@@ -61,7 +61,8 @@
    #:finalizer %ts-query-cursor-delete))
 
 (eval-when (expand load eval)
-  (load-extension "libguile_ts" "init_ts_query"))
+  (unless (getenv "GUILE_TS_CROSS_COMPILING")
+    (load-extension "libguile_ts" "init_ts_query")))
 
 (define (ts-query-new language . sources)
   (let* ((str

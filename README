@@ -15,4 +15,3 @@
 - Poor documentation :: you can see tests/ directory for how to use.
 - Some tree-sitter C apis is miss.
 - Some apis are not friendly.
-- No cross-compile support.

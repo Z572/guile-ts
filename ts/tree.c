@@ -392,6 +392,25 @@ SCM_DEFINE(tsn_descendant_for_byte_range, "ts-node-descendant-for-byte-range", 3
 }
 #undef FUNC_NAME
 
+SCM_DEFINE(tsn_descendant_for_point_range, "ts-node-descendant-for-point-range", 3, 1, 0,
+           (SCM o,SCM start,SCM end,SCM named), "")
+#define FUNC_NAME s_tsn_descendant_for_point_range
+{
+  ASSERT_TSN(o);
+  Node *node=FR(o);
+  scm_remember_upto_here_1(o);
+  TSNode t_node=node_ref(node);
+  TSPoint t_point_start = cons_to_point(start);
+  TSPoint t_point_end = cons_to_point(end);
+  scm_remember_upto_here_2(start,end);
+  SCM sn=make_node((SCM_UNBNDP(named) ? false :scm_to_bool(named))
+                   ? ts_node_named_descendant_for_point_range(t_node,t_point_start,t_point_end)
+                   : ts_node_descendant_for_point_range(t_node,t_point_start,t_point_end));
+  scm_remember_upto_here_2(o,named);
+  return sn;
+}
+#undef FUNC_NAME
+
 
 
 SCM_DEFINE(tsn_eq, "%ts-node-eq?", 2, 0, 0,

@@ -35,7 +35,7 @@
                 get-string-all)
               "-git"))
     (source (local-file
-             "../.." "guile-ts-checkout"
+             "../.." (git-file-name name version)
              #:recursive? #t
              #:select? (or (git-predicate %srcdir)
                            (const #t))))

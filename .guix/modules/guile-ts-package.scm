@@ -1,5 +1,6 @@
 (define-module (guile-ts-package)
   #:use-module (gnu packages tree-sitter)
+  #:use-module (rnrs io ports)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
@@ -23,17 +24,20 @@
   #:use-module (gnu packages wm)
   #:use-module (gnu packages freedesktop))
 
+(define %srcdir (string-append
+                 (current-source-directory)
+                 "/../.."))
 (define-public guile-ts
   (package
     (name "guile-ts")
-    (version "git")
+    (version (string-append
+              (call-with-input-file (string-append %srcdir "/" ".version")
+                get-string-all)
+              "-git"))
     (source (local-file
              "../.." "guile-ts-checkout"
              #:recursive? #t
-             #:select? (or (git-predicate
-                            (string-append
-                             (current-source-directory)
-                             "/../.."))
+             #:select? (or (git-predicate %srcdir)
                            (const #t))))
     (build-system gnu-build-system)
     (arguments

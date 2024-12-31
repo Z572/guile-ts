@@ -27,18 +27,22 @@
 (define %srcdir (string-append
                  (current-source-directory)
                  "/../.."))
+(define %version (string-append
+                  (call-with-input-file (string-append %srcdir "/" ".version")
+                    get-string-all)
+                  "-git"))
+
+(define source-checkout
+  (local-file
+   "../.." (git-file-name "guile-ts" %version)
+   #:recursive? #t
+   #:select? (or (git-predicate %srcdir)
+                 (const #t))))
 (define-public guile-ts
   (package
     (name "guile-ts")
-    (version (string-append
-              (call-with-input-file (string-append %srcdir "/" ".version")
-                get-string-all)
-              "-git"))
-    (source (local-file
-             "../.." (git-file-name name version)
-             #:recursive? #t
-             #:select? (or (git-predicate %srcdir)
-                           (const #t))))
+    (version %version)
+    (source source-checkout)
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags #~(list "GUILE_AUTO_COMPILE=0")
@@ -71,6 +75,51 @@
 parsing library.")
     (home-page "https://github.com/Z572/guile-ts")
     (license license:gpl3+)))
+
+(define source-tarball
+  ;; Tarball make from the Git checkout.
+  (dist-package guile-ts source-checkout
+                #:phases #~(modify-phases %dist-phases
+                             (replace 'build-dist
+                               (lambda args
+                                 ;; Run "make" before "make distcheck".
+                                 (apply (assoc-ref %dist-phases 'build-dist)
+                                        #:build-before-dist? #t
+                                        #:dist-target "dist"
+                                        #:tests? #f
+                                        args))))))
+
+(define-public guile-ts-from-tarball
+  (let ((base guile-ts))
+    (package
+      (inherit guile-ts)
+      (version (string-append %version "-tarball"))
+      (source source-tarball)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases #~%standard-phases)
+          #~(modify-phases #$phases
+              (replace 'unpack
+                (lambda _
+                  (define source
+                    #+(package-source this-package))
+
+                  ;; Locate a tarball within SOURCE and unpack it.
+                  (invoke "tar" "xvf"
+                          (car (find-files source "\\.tar.gz$")))
+                  (let ((directory
+                         (car (find-files "."
+                                          (lambda (file stat)
+                                            (and (string-prefix?
+                                                  "guile-ts" (basename file))
+                                                 (eq? 'directory
+                                                      (stat:type stat))))
+                                          #:directories? #t))))
+                    (format #t "changing directory to '~a'~%" directory)
+                    (chdir directory))))))))
+      (native-inputs
+       (modify-inputs (package-native-inputs base)
+         (delete "autoconf" "automake"))))))
 
 (define tree-sitter-0.24
   (let ((base tree-sitter))

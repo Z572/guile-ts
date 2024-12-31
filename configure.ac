@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([guile-ts], [m4_normalize(m4_include([.version]))], [873216071@qq.com],
+AC_INIT([guile-ts], [m4_normalize(m4_include([version]))], [873216071@qq.com],
                     [guile-ts],
                     [https://github.com/Z572/guile-ts])
 AC_CONFIG_SRCDIR([ts/init.c])

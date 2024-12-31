@@ -28,7 +28,7 @@
                  (current-source-directory)
                  "/../.."))
 (define %version (string-append
-                  (call-with-input-file (string-append %srcdir "/" ".version")
+                  (call-with-input-file (string-append %srcdir "/" "version")
                     get-string-all)
                   "-git"))
 

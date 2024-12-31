@@ -72,4 +72,30 @@ parsing library.")
     (home-page "https://github.com/Z572/guile-ts")
     (license license:gpl3+)))
 
+(define tree-sitter-0.24
+  (let ((base tree-sitter))
+    (package
+      (inherit base)
+      (name (package-name base))
+      (version "0.24.6")
+      (source (origin
+                (inherit (package-source base))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/tree-sitter/tree-sitter")
+                      (commit (string-append "v" version))))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0hp0cmqvrh8f2mfs0hhn9n1dr53vigxcb88xfj27m4mn5pypdc9g")))))))
+
+(define-public guile-ts/ts-0.24
+  (let ((base guile-ts))
+    (package
+      (inherit base)
+      (name "guile-ts-with-tree-sitter-0.24")
+      (inputs
+       (modify-inputs (package-inputs base)
+         (replace "tree-sitter" tree-sitter-0.24))))))
+
 guile-ts

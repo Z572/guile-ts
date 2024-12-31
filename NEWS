@@ -3,6 +3,22 @@
 
 Copyright (C) 2023 Zheng Junjie <873216071@qq.com>
 
+* Changes in 0.3.0 (since 0.2.0)
+** New Functionality
+*** New ~ts-parser-parse~ procedure
+
+Allows parsing from custom objects.
+
+*** New ~ts-node-descendant-for-point-range~ procedure
+This corresponds to ts_node_named_descendant_for_point_range
+and ts_node_descendant_for_point_range.
+
+** Support cross compiling.
+** Make this repository to a guix channel
+** Bug fixes
+*** Clean some compile warn
+*** Fixed tests above tree-sitter 0.21
+*** Fixed random errors with ts-cursor
 * Changes in 0.2.0 (since 0.1.0)
 ** New Functionality
 *** substring-utf8: new procedure.

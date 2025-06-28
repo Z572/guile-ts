@@ -4,7 +4,7 @@
 AC_PREREQ([2.69])
 AC_INIT([guile-ts], [m4_normalize(m4_include([version]))], [z572@z572.online],
                     [guile-ts],
-                    [https://github.com/Z572/guile-ts])
+                    [https://codeberg.org/Z572/guile-ts])
 AC_CONFIG_SRCDIR([ts/init.c])
 AC_CONFIG_HEADERS([ts/config.h])
 AC_CONFIG_AUX_DIR([build-aux])

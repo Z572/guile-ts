@@ -1,6 +1,6 @@
 (channel
  (version 0)
- (url "https://github.com/Z572/guile-ts")
+ (url "https://codeberg.org/Z572/guile-ts")
  (directory ".guix/modules"))
 
 ;; Local Variables:

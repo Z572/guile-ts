@@ -73,7 +73,7 @@
     (synopsis "Guile bindings to the Tree-sitter parsing library")
     (description "This package provides Guile bindings to the Tree-sitter
 parsing library.")
-    (home-page "https://github.com/Z572/guile-ts")
+    (home-page "https://codeberg.org/Z572/guile-ts")
     (license license:gpl3+)))
 
 (define source-tarball

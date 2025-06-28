@@ -72,7 +72,7 @@ Guile-TS depends on the following packages:
 
 @itemize
 @item @url{https://www.gnu.org/software/guile/, GNU Guile}
-@item @url{http://githbu.com/tree-sitter/tree-sitter, tree-sitter}
+@item @url{http://github.com/tree-sitter/tree-sitter, tree-sitter}
 @end itemize
 
 Get the sources of Guile-TS from GitHub:
